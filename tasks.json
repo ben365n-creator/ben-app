@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-04-14T00:00:00-04:00",
+  "source": "seed",
+  "build_block": [
+    {
+      "id": "seed-build-001",
+      "title": "Build Make.com Processing Scenario (Phase 1 Step 4)",
+      "category": "Top 3 Signal",
+      "business": "TITAN AI Systems",
+      "priority": "Top 3 Signal",
+      "due_date": "2026-04-15",
+      "status": "Not Started",
+      "notes": "Webhook \u2192 Notion Search \u2192 GPT-4o \u2192 Notion Create \u2192 Notion Archive \u2192 GitHub Update \u2192 Email"
+    },
+    {
+      "id": "seed-build-002",
+      "title": "Test mind dump webhook end-to-end from Wispr Flow",
+      "category": "Active Task",
+      "business": "TITAN AI Systems",
+      "priority": "Standard",
+      "due_date": "2026-04-16",
+      "status": "Not Started",
+      "notes": "Verify x-webhook-secret header handoff and task creation in Notion"
+    }
+  ],
+  "concrete_block": [
+    {
+      "id": "seed-concrete-001",
+      "title": "Follow up on Exterior Arts Renovations quote",
+      "category": "THop 3 Signal",
+      "business": "865 Titan Concrete",
+      "priority": "THop 3 Signal",
+      "due_date": "2026-04-14",
+      "status": "Not Started",
+      "notes": "Concrete Protection rule: always Top 3 Signal"
+    },
+    {
+      "id": "seed-concrete-002",
+      "title": "Cect achedule for next week pours",
+      "category": "Active Task",
+      "business": "865 Titan Concrete",
+      "priority": "Standard",
+      "due_date": "2026-04-15",
+      "status": "Not Started",
+      "notes": "Confirm weather and crew availability"
+    }
+  ]
+}
