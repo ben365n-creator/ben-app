@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EA Jobs">
+  <meta name="theme-color" content="#1b4332">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>EA Jobs</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+      min-height: 100vh;
+    }
+    header {
+      background: #1b4332;
+      color: #fff;
+      padding: 22px 24px 18px;
+      text-align: center;
+    }
+    header h1 { font-size: 24px; font-weight: 700; letter-spacing: 0.3px; }
+    header p  { font-size: 13px; color: rgba(255,255,255,0.72); margin-top: 5px; }
+    main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 24px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .field { margin-bottom: 22px; }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 15px 14px;
+      font-size: 17px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      outline: none;
+      background: #fff;
+      color: #111827;
+      -webkit-appearance: none;
+      transition: border-color 0.15s;
+    }
+    input:focus { border-color: #1b4332; }
+    input:disabled {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    .hint { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+    #crewPayDisplay {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1b4332;
+      padding: 12px 0 4px;
+    }
+    #submitBtn {
+      width: 100%;
+      background: #1b4332;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 18px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      letter-spacing: 0.2px;
+      -webkit-appearance: none;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    #submitBtn:active { background: #0f2d1a; }
+    #submitBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .error-box {
+      background: #fef2f2;
+      border: 1.5px solid #fca5a5;
+      border-radius: 10px;
+      color: #b91c1c;
+      padding: 13px 15px;
+      font-size: 15px;
+      margin-bottom: 18px;
+      display: none;
+    }
+    #loading-row {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 14px;
+      padding: 10px 0 18px;
+      display: none;
+    }
+    /* Success screen */
+    #success-screen { display: none; text-align: center; }
+    .check-wrap {
+      width: 84px; height: 84px;
+      background: #1b4332;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px;
+    }
+    .check-wrap svg { width: 46px; height: 46px; }
+    #success-screen h2 { font-size: 26px; font-weight: 700; color: #1b4332; margin-bottom: 10px; }
+    #success-screen p  { font-size: 16px; color: #6b7280; line-height: 1.65; margin-bottom: 30px; }
+    #resetBtn {
+      background: transparent;
+      border: 2px solid #1b4332;
+      color: #1b4332;
+      border-radius: 12px;
+      padding: 14px 36px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EA Jobs</h1>
+    <p>Exterior Arts Renovations</p>
+  </header>
+
+  <main>
+    <!-- Form screen -->
+    <div id="form-screen">
+      <div id="loading-row">Loading jobs…</div>
+      <div class="error-box" id="error-box"></div>
+
+      <div class="card">
+        <div class="field">
+          <label for="jobName">Job Name</label>
+          <input type="text" id="jobName" list="jobList"
+                 placeholder="Start typing a job name…" autocomplete="off">
+          <datalist id="jobList"></datalist>
+        </div>
+
+        <div class="field">
+          <label for="materialsCost">Total Materials Cost ($)</label>
+          <input type="number" id="materialsCost" min="0" step="0.01" placeholder="0.00">
+        </div>
+
+        <div class="field">
+          <label>Crew Leader Pay</label>
+          <div id="crewPayDisplay">—</div>
+          <p class="hint">= (Bid − Materials) × 15%</p>
+        </div>
+
+        <button id="submitBtn" onclick="submitJob()">Mark Job as Paid ✓</button>
+      </div>
+    </div>
+
+    <!-- Success screen -->
+    <div id="success-screen" class="card" style="margin-top:0;">
+      <div class="check-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white"
+             stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2>Done!</h2>
+      <p>Andrew and Trish will receive<br>a text shortly.</p>
+      <button id="resetBtn" onclick="resetForm()">Close Another Job</button>
+    </div>
+  </main>
+
+  <script>
+    const GET_JOBS_URL  = 'https://hook.us2.make.com/zvg1lf2a8on7fqgknnj3w9xfe19wfjtg';
+    const SUBMIT_URL    = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
+
+    let jobsData = {}; // { jobName: bidAmount }
+
+    async function loadJobs() {
+      const bar = document.getElementById('loading-row');
+      bar.style.display = 'block';
+      try {
+        const resp = await fetch(GET_JOBS_URL);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const rows = await resp.json();
+        const dl = document.getElementById('jobList');
+        dl.innerHTML = '';
+        jobsData = {};
+        rows
+          .filter(r => r['Job Name'] && r['Status'] !== 'Paid')
+          .forEach(r => {
+            const name = String(r['Job Name']).trim();
+            const bid  = parseFloat(r['Bid Amount']) || 0;
+            if (!name) return;
+            jobsData[name] = bid;
+            const opt = document.createElement('option');
+            opt.value = name;
+            dl.appendChild(opt);
+          });
+      } catch (e) {
+        showError('Could not load job list. Check your connection and refresh.');
+      } finally {
+        bar.style.display = 'none';
+      }
+    }
+
+    function recalc() {
+      const name  = document.getElementById('jobName').value.trim();
+      const cost  = parseFloat(document.getElementById('materialsCost').value) || 0;
+      const disp  = document.getElementById('crewPayDisplay');
+      const bid   = jobsData[name];
+      if (bid !== undefined) {
+        const profit = bid - cost;
+        if (profit > 0) {
+          disp.textContent = '$' + (profit * 0.15).toFixed(2);
+        } else {
+          disp.textContent = '$0.00';
+        }
+      } else {
+        disp.textContent = '—';
+      }
+    }
+
+    document.getElementById('jobName').addEventListener('input', recalc);
+    document.getElementById('materialsCost').addEventListener('input', recalc);
+
+    function showError(msg) {
+      const el = document.getElementById('error-box');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+    function clearError() {
+      const el = document.getElementById('error-box');
+      el.textContent = '';
+      el.style.display = 'none';
+    }
+
+    async function submitJob() {
+      clearError();
+      const jobName      = document.getElementById('jobName').value.trim();
+      const matCostRaw   = document.getElementById('materialsCost').value;
+      const materialsCost = parseFloat(matCostRaw);
+
+      if (!jobName) { showError('Please enter a job name.'); return; }
+      if (!(jobName in jobsData)) {
+        showError('Job not found — check the spelling and try again.');
+        return;
+      }
+      if (isNaN(materialsCost) || materialsCost < 0) {
+        showError('Please enter a valid materials cost (can be 0).');
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      try {
+        const resp = await fetch(SUBMIT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobName, materialsCost })
+        });
+        if (!resp.ok) throw new Error('Server error ' + resp.status);
+
+        document.getElementById('form-screen').style.display = 'none';
+        document.getElementById('success-screen').style.display = 'block';
+      } catch (e) {
+        showError('Submission failed — please try again or contact Ben.');
+        btn.disabled = false;
+        btn.textContent = 'Mark Job as Paid ✓';
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('jobName').value = '';
+      document.getElementById('materialsCost').value = '';
+      document.getElementById('crewPayDisplay').textContent = '—';
+      clearError();
+      document.getElementById('success-screen').style.display = 'none';
+      document.getElementById('form-screen').style.display = 'block';
+      loadJobs();
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {});
+      });
+    }
+
+    loadJobs();
+  </script>
+</body>
+</html>
