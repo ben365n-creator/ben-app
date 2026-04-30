@@ -313,7 +313,7 @@
           <div class="preview-pill" id="nj-preview"></div>
           <div class="field">
             <label for="njBid">Bid Amount ($)</label>
-            <input type="number" id="njBid" min="0.01" step="0.01" placeholder="0.00" oninput="onNJInput()">
+            <input type="text" inputmode="decimal" id="njBid" placeholder="0.00" oninput="onNJInput()">
           </div>
           <button id="njSubmitBtn" class="btn-full" onclick="createJob()" disabled>Create Job</button>
         </div>
@@ -402,7 +402,6 @@
     var NEW_JOB_URL      = 'https://hook.us2.make.com/rxi8k7sef51wjhp78sdghd58w91q1jm2';
 
     // ─── Role detection ─────────────────────────────────────────────────────
-    // Priority: URL param → localStorage → role picker
     var urlParams = new URLSearchParams(window.location.search);
     var urlRole   = (urlParams.get('role') || '').toLowerCase();
     var urlName   = urlParams.get('name') || '';
@@ -453,16 +452,38 @@
     var MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     function fmtDate(d) { return MONTHS[d.getMonth()] + ' ' + d.getDate(); }
 
+    // ─── batchGet response parser ────────────────────────────────────────────
+    // Make.com returns: { valueRanges: [{ values: [[hdr,...],[row,...],...] }] }
+    function parseBatchGetResponse(data) {
+      if (data && data.valueRanges && data.valueRanges[0] && data.valueRanges[0].values) {
+        var vr = data.valueRanges[0].values;
+        if (vr.length < 2) return [];
+        var headers = vr[0];
+        return vr.slice(1)
+          .filter(function(row) { return row.some(function(v) { return v !== ''; }); })
+          .map(function(row) {
+            var obj = {};
+            headers.forEach(function(h, i) { obj[h] = row[i] !== undefined ? row[i] : ''; });
+            return obj;
+          });
+      }
+      // Fallback: already an array (legacy format)
+      if (Array.isArray(data)) return data;
+      return [];
+    }
+
     // ─── API fetchers (all cache:no-store) ──────────────────────────────────
     async function fetchJobs() {
       var r = await fetch(GET_JOBS_URL, { cache: 'no-store' });
       if (!r.ok) throw new Error('jobs fetch failed');
-      return await r.json();
+      var data = await r.json();
+      return parseBatchGetResponse(data);
     }
     async function fetchExpenses() {
       var r = await fetch(GET_EXPENSES_URL, { cache: 'no-store' });
       if (!r.ok) throw new Error('expenses fetch failed');
-      return await r.json();
+      var data = await r.json();
+      return parseBatchGetResponse(data);
     }
 
     // ─── Init ────────────────────────────────────────────────────────────────
@@ -561,9 +582,9 @@
           return (r['Status'] || '').trim().toLowerCase() === 'active';
         });
         if (!active.length) {
-          sel.innerHTML = '<option value="">No active jobs right now &#8212; check back soon</option>';
+          sel.innerHTML = '<option value="">No active jobs right now — check back soon</option>';
         } else {
-          sel.innerHTML = '<option value="">Select a job&#8230;</option>';
+          sel.innerHTML = '<option value="">Select a job…</option>';
           active.forEach(function(r) {
             var n = String(r['Job Name'] || '').trim();
             if (!n) return;
@@ -573,7 +594,7 @@
           });
         }
       } catch(e) {
-        sel.innerHTML = '<option value="">Could not load jobs &#8212; try refreshing</option>';
+        sel.innerHTML = '<option value="">Could not load jobs — try refreshing</option>';
       }
       validateCrewForm();
     }
@@ -654,9 +675,11 @@
     // ═══════════════════════════════════════════════════════════
 
     function onNJInput() {
-      var name = document.getElementById('njName').value.trim();
-      var addr = document.getElementById('njAddr').value.trim();
-      var bid  = parseFloat(document.getElementById('njBid').value);
+      var name   = document.getElementById('njName').value.trim();
+      var addr   = document.getElementById('njAddr').value.trim();
+      // Strip commas (iOS locale uses comma as decimal separator)
+      var rawBid = document.getElementById('njBid').value.replace(/,/g, '.');
+      var bid    = parseFloat(rawBid);
       // Live preview pill
       var pill = document.getElementById('nj-preview');
       if (name && addr) {
@@ -673,12 +696,13 @@
     }
 
     async function createJob() {
-      var errEl = document.getElementById('nj-error');
+      var errEl  = document.getElementById('nj-error');
       errEl.style.display = 'none';
-      var name = document.getElementById('njName').value.trim();
-      var addr = document.getElementById('njAddr').value.trim();
-      var bid  = parseFloat(document.getElementById('njBid').value);
-      var btn  = document.getElementById('njSubmitBtn');
+      var name   = document.getElementById('njName').value.trim();
+      var addr   = document.getElementById('njAddr').value.trim();
+      var rawBid = document.getElementById('njBid').value.replace(/,/g, '.');
+      var bid    = parseFloat(rawBid);
+      var btn    = document.getElementById('njSubmitBtn');
       btn.disabled = true; btn.textContent = 'Creating…';
       try {
         var resp = await fetch(NEW_JOB_URL, {
@@ -691,7 +715,7 @@
         var last    = parts.length > 1 ? parts[parts.length - 1] : parts[0];
         var jobName = last + ' — ' + addr;
         document.getElementById('nj-success-msg').textContent =
-          '"' + jobName + '" created for ' + fmt$(bid) + '. Now live in Close Job.';
+          '“' + jobName + '” created for ' + fmt$(bid) + '. Now live in Close Job.';
         document.getElementById('nj-form-wrap').style.display = 'none';
         document.getElementById('nj-success-wrap').style.display = 'block';
         // Auto-switch to Close Job after user sees confirmation
