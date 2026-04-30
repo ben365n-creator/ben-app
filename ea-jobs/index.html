@@ -395,7 +395,7 @@
 
   <script>
     // ─── Webhooks ───────────────────────────────────────────────────────────
-    var GET_JOBS_URL     = 'https://hook.us2.make.com/zvg1lf2a8on7fqgknnj3w9xfe19wfjtg';
+    var GET_JOBS_URL     = 'https://hook.us2.make.com/a7q8pqnliyqb5ut5r6wtc5a3493gl78g';
     var SUBMIT_URL       = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
     var LOG_EXPENSE_URL  = 'https://hook.us2.make.com/d34v6x6fggpxozjyhf8aojhondp824hx';
     var GET_EXPENSES_URL = 'https://hook.us2.make.com/fnbs3jc71w8m3l86wn0ns1t085atdosj';
@@ -472,15 +472,23 @@
       return [];
     }
 
-    // ─── API fetchers (all cache:no-store) ──────────────────────────────────
+    // ─── API fetchers (POST, cache:no-store) ────────────────────────────────
     async function fetchJobs() {
-      var r = await fetch(GET_JOBS_URL, { cache: 'no-store' });
+      var r = await fetch(GET_JOBS_URL, {
+        method: 'POST', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}'
+      });
       if (!r.ok) throw new Error('jobs fetch failed');
       var data = await r.json();
       return parseBatchGetResponse(data);
     }
     async function fetchExpenses() {
-      var r = await fetch(GET_EXPENSES_URL, { cache: 'no-store' });
+      var r = await fetch(GET_EXPENSES_URL, {
+        method: 'POST', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}'
+      });
       if (!r.ok) throw new Error('expenses fetch failed');
       var data = await r.json();
       return parseBatchGetResponse(data);
@@ -715,7 +723,7 @@
         var last    = parts.length > 1 ? parts[parts.length - 1] : parts[0];
         var jobName = last + ' — ' + addr;
         document.getElementById('nj-success-msg').textContent =
-          '“' + jobName + '” created for ' + fmt$(bid) + '. Now live in Close Job.';
+          '"' + jobName + '" created for ' + fmt$(bid) + '. Now live in Close Job.';
         document.getElementById('nj-form-wrap').style.display = 'none';
         document.getElementById('nj-success-wrap').style.display = 'block';
         // Auto-switch to Close Job after user sees confirmation
