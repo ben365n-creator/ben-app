@@ -246,7 +246,7 @@
     </main>
   </div>
 
-  <!-- LOG EXPENSE TAB -->
+  <!-- LOG EXPENSE TAB (crew only) -->
   <div class="tab-pane" id="tab-log-expense">
     <main>
       <div id="expense-form-screen">
@@ -344,18 +344,14 @@
 
     function initUI() {
       if (!hasRole) {
-        // No role from URL or localStorage — show picker, hide nav
         document.getElementById('role-picker').style.display = 'block';
         document.getElementById('bottom-nav').style.display = 'none';
         return;
       }
-
-      // Update header subtitle to reflect the current user
       var sub = document.getElementById('header-sub');
       if (isCrew && crewName)  sub.textContent = 'Hey ' + crewName + ' — log your materials';
       else if (isTrish)        sub.textContent = 'Trish — Exterior Arts Renovations';
       else if (isAndrew)       sub.textContent = 'Andrew — Exterior Arts Renovations';
-
       if (isAndrew) document.getElementById('andrew-snapshot').style.display = 'block';
       buildNav();
       switchTab(isCrew ? 'log-expense' : (isTrish ? 'new-job' : 'close'));
@@ -365,11 +361,11 @@
       var nav = document.getElementById('bottom-nav');
       nav.innerHTML = '';
       var tabs = [];
-      if (isTrish)    tabs.push({id:'new-job',       label:'New Job'});
-      if (isFullView) tabs.push({id:'close',          label:'Close Job'});
-      if (isFullView) tabs.push({id:'week',           label:'This Week'});
-      tabs.push(      {id:'log-expense',              label:'Log Expense'});
-      if (isFullView) tabs.push({id:'expenses-view',  label:'Expenses'});
+      if (isTrish)    tabs.push({id:'new-job',      label:'New Job'});
+      if (isFullView) tabs.push({id:'close',         label:'Close Job'});
+      if (isFullView) tabs.push({id:'week',          label:'This Week'});
+      if (isCrew)     tabs.push({id:'log-expense',   label:'Log Expense'});
+      if (isFullView) tabs.push({id:'expenses-view', label:'Expenses'});
       tabs.forEach(function(t) {
         var btn = document.createElement('button');
         btn.className = 'nav-btn'; btn.id = 'nav-' + t.id;
@@ -707,7 +703,8 @@
       if (pane) pane.classList.add('active'); if (btn) btn.classList.add('active');
       if (tab === 'week')          renderThisWeek();
       if (tab === 'expenses-view') renderExpensesView();
-      if (tab === 'log-expense')   populateJobPicker();
+      if (tab === 'close')         loadJobs();
+      if (tab === 'log-expense')   loadJobs();
     }
 
     function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
