@@ -116,6 +116,14 @@
 
     .field-hint { font-size: 11px; color: #9ca3af; margin-top: 5px; font-style: italic; }
     .job-preview-pill { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px 12px; font-size: 14px; font-weight: 600; color: #1b4332; margin-bottom: 16px; display: none; }
+
+    /* Role picker */
+    .role-picker-wrap { max-width: 480px; margin: 0 auto; padding: 32px 16px 24px; }
+    .role-picker-title { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px; text-align: center; }
+    .role-picker-sub { font-size: 14px; color: #6b7280; text-align: center; margin-bottom: 28px; }
+    .role-btn { width: 100%; background: #fff; color: #1b4332; border: 2px solid #1b4332; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; -webkit-appearance: none; margin-bottom: 12px; transition: background 0.15s; }
+    .role-btn:active { background: #f0fdf4; }
+    .role-section-label { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.6px; margin: 20px 0 10px; text-align: center; }
   </style>
 </head>
 <body>
@@ -134,6 +142,20 @@
   </div>
 
   <nav class="bottom-nav" id="bottom-nav"></nav>
+
+  <!-- ROLE PICKER (shown when no role detected from URL or localStorage) -->
+  <div id="role-picker" style="display:none;">
+    <div class="role-picker-wrap">
+      <div class="role-picker-title">Who are you?</div>
+      <div class="role-picker-sub">Tap your name to get started. This only needs to be done once on this device.</div>
+      <button class="role-btn" onclick="selectRole('trish')">Trish</button>
+      <button class="role-btn" onclick="selectRole('andrew')">Andrew</button>
+      <div class="role-section-label">Crew</div>
+      <button class="role-btn" onclick="selectRole('crew','Mark')">Mark</button>
+      <button class="role-btn" onclick="selectRole('crew','Daniel')">Daniel</button>
+      <button class="role-btn" onclick="selectRole('crew','Evan')">Evan</button>
+    </div>
+  </div>
 
   <!-- NEW JOB TAB (Trish only) -->
   <div class="tab-pane" id="tab-new-job">
@@ -267,13 +289,38 @@
   </div>
 
   <script>
+    // ── Role detection ──────────────────────────────────────────────────────────
+    // Priority: URL param > localStorage fallback > role picker UI.
+    // When ?role= is in the URL, persist it to localStorage so home-screen
+    // PWA launches (which strip query params) still get the correct role.
     var urlParams = new URLSearchParams(window.location.search);
-    var role      = (urlParams.get('role') || '').toLowerCase();
-    var crewName  = urlParams.get('name') || '';
-    var isCrew    = role === 'crew';
-    var isTrish   = role === 'trish';
-    var isAndrew  = role === 'andrew';
+    var urlRole   = (urlParams.get('role') || '').toLowerCase();
+    var urlCrew   = urlParams.get('name') || '';
+
+    var role = '', crewName = '';
+
+    if (urlRole) {
+      // URL has explicit role — trust it and persist
+      role = urlRole;
+      crewName = urlCrew;
+      try {
+        localStorage.setItem('ea_role', role);
+        if (crewName) localStorage.setItem('ea_crew_name', crewName);
+        else localStorage.removeItem('ea_crew_name');
+      } catch(e) {}
+    } else {
+      // No URL role — try localStorage (covers home-screen PWA launches)
+      try {
+        role = localStorage.getItem('ea_role') || '';
+        crewName = localStorage.getItem('ea_crew_name') || '';
+      } catch(e) { role = ''; crewName = ''; }
+    }
+
+    var isCrew     = role === 'crew';
+    var isTrish    = role === 'trish';
+    var isAndrew   = role === 'andrew';
     var isFullView = !isCrew;
+    var hasRole    = role !== '';
 
     var GET_JOBS_URL     = 'https://hook.us2.make.com/zvg1lf2a8on7fqgknnj3w9xfe19wfjtg';
     var SUBMIT_URL       = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
@@ -284,10 +331,31 @@
     var allRows = [], jobsData = {}, allExpenses = [];
     var selectedExpJob = null, receiptBase64 = null;
 
+    // Called from role picker — persist role then reload with ?role= param
+    function selectRole(r, name) {
+      try {
+        localStorage.setItem('ea_role', r);
+        if (name) localStorage.setItem('ea_crew_name', name);
+        else localStorage.removeItem('ea_crew_name');
+      } catch(e) {}
+      var url = window.location.pathname + '?role=' + r + (name ? '&name=' + encodeURIComponent(name) : '');
+      window.location.href = url;
+    }
+
     function initUI() {
-      if (isCrew && crewName) {
-        document.getElementById('header-sub').textContent = 'Hey ' + crewName + ' — log your materials';
+      if (!hasRole) {
+        // No role from URL or localStorage — show picker, hide nav
+        document.getElementById('role-picker').style.display = 'block';
+        document.getElementById('bottom-nav').style.display = 'none';
+        return;
       }
+
+      // Update header subtitle to reflect the current user
+      var sub = document.getElementById('header-sub');
+      if (isCrew && crewName)  sub.textContent = 'Hey ' + crewName + ' — log your materials';
+      else if (isTrish)        sub.textContent = 'Trish — Exterior Arts Renovations';
+      else if (isAndrew)       sub.textContent = 'Andrew — Exterior Arts Renovations';
+
       if (isAndrew) document.getElementById('andrew-snapshot').style.display = 'block';
       buildNav();
       switchTab(isCrew ? 'log-expense' : (isTrish ? 'new-job' : 'close'));
@@ -297,10 +365,11 @@
       var nav = document.getElementById('bottom-nav');
       nav.innerHTML = '';
       var tabs = [];
-      if (isTrish) tabs.push({id:'new-job', label:'New Job'});
-      if (isFullView) { tabs.push({id:'close', label:'Close Job'}); tabs.push({id:'week', label:'This Week'}); }
-      tabs.push({id:'log-expense', label:'Log Expense'});
-      if (isFullView) tabs.push({id:'expenses-view', label:'Expenses'});
+      if (isTrish)    tabs.push({id:'new-job',       label:'New Job'});
+      if (isFullView) tabs.push({id:'close',          label:'Close Job'});
+      if (isFullView) tabs.push({id:'week',           label:'This Week'});
+      tabs.push(      {id:'log-expense',              label:'Log Expense'});
+      if (isFullView) tabs.push({id:'expenses-view',  label:'Expenses'});
       tabs.forEach(function(t) {
         var btn = document.createElement('button');
         btn.className = 'nav-btn'; btn.id = 'nav-' + t.id;
@@ -648,7 +717,7 @@
     }
 
     initUI();
-    loadJobs();
+    if (hasRole) loadJobs();
   </script>
 </body>
 </html>
