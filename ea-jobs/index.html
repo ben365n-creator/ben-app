@@ -7,123 +7,214 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="EA Jobs">
-  <meta name="theme-color" content="#1b4332">
+  <meta name="theme-color" content="#1a3a2a">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <title>EA Jobs</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
-      background: #f9fafb;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: #f4f6f8;
       color: #111827;
       min-height: 100vh;
-      padding-bottom: 64px;
     }
+
+    /* ── Header ─────────────────────────────────────────── */
     header {
-      background: #1b4332;
+      background: #1a3a2a;
       color: #fff;
       padding: 20px 24px 16px;
       text-align: center;
     }
-    header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.3px; }
-    header p  { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+    header h1 { font-size: 22px; font-weight: 700; }
+    header p  { font-size: 13px; color: rgba(255,255,255,0.72); margin-top: 4px; }
 
-    .snapshot-wrap { background: #1b4332; padding: 0 16px 16px; }
+    /* ── Andrew snapshot bar ───────────────────────────── */
+    .snapshot-bar { background: #1a3a2a; padding: 0 16px 16px; }
     .snapshot-grid { display: flex; gap: 8px; }
-    .snapshot-card { flex: 1; background: rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 8px; text-align: center; }
-    .snap-val { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
-    .snap-label { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+    .snap-card { flex: 1; background: rgba(255,255,255,0.13); border-radius: 10px; padding: 10px 6px; text-align: center; }
+    .snap-val { font-size: 20px; font-weight: 800; color: #fff; line-height: 1.1; }
+    .snap-lbl { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.65); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: #fff; border-top: 1px solid #e5e7eb; display: flex; z-index: 100; }
-    .nav-btn { flex: 1; border: none; background: transparent; font-size: 12px; font-weight: 600; color: #9ca3af; cursor: pointer; -webkit-appearance: none; transition: color 0.15s; padding-bottom: 4px; }
-    .nav-btn.active { color: #1b4332; border-top: 2.5px solid #1b4332; }
+    /* ── Bottom nav ────────────────────────────────────── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 58px; background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex; z-index: 100;
+    }
+    .nav-btn {
+      flex: 1; border: none; background: transparent;
+      font-size: 11px; font-weight: 600; color: #9ca3af;
+      cursor: pointer; transition: color 0.15s; padding-bottom: 4px;
+      -webkit-appearance: none;
+    }
+    .nav-btn.active { color: #1a3a2a; border-top: 2.5px solid #1a3a2a; }
+    .has-nav { padding-bottom: 70px; }
 
+    /* ── Tab panes ─────────────────────────────────────── */
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
 
+    /* ── Card / layout ─────────────────────────────────── */
     main { max-width: 480px; margin: 0 auto; padding: 20px 16px 24px; }
-    .card { background: #fff; border-radius: 14px; padding: 22px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: 14px; }
-    .field { margin-bottom: 20px; }
-    label { display: block; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 7px; }
-    input[type="text"], input[type="number"], select { width: 100%; padding: 14px 13px; font-size: 17px; border: 2px solid #e5e7eb; border-radius: 10px; outline: none; background: #fff; color: #111827; -webkit-appearance: none; transition: border-color 0.15s; }
-    input:focus, select:focus { border-color: #1b4332; }
-    select { cursor: pointer; }
+    .card { background: #fff; border-radius: 14px; padding: 20px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: 14px; }
 
-    .expense-indicator { border-radius: 8px; padding: 9px 12px; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
-    .expense-indicator.green { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-    .expense-indicator.yellow { background: #fefce8; color: #92400e; border: 1px solid #fde68a; }
+    /* ── Form elements ─────────────────────────────────── */
+    .field { margin-bottom: 18px; }
+    label {
+      display: block; font-size: 11px; font-weight: 700;
+      color: #6b7280; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%; padding: 13px 12px; font-size: 16px;
+      border: 2px solid #e5e7eb; border-radius: 10px;
+      outline: none; background: #fff; color: #111827;
+      -webkit-appearance: none; transition: border-color 0.15s;
+    }
+    input:focus, select:focus { border-color: #1a3a2a; }
+    .field-hint { font-size: 11px; color: #9ca3af; margin-top: 4px; }
 
-    .pnl-card { background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 14px; }
-    .pnl-row { display: flex; justify-content: space-between; align-items: baseline; padding: 3px 0; }
-    .pnl-label { color: #6b7280; font-weight: 500; }
-    .pnl-value { color: #111827; font-weight: 600; font-size: 14px; }
-    .pnl-divider { border-top: 1px solid #bbf7d0; margin: 8px 0; }
-    .pnl-profit .pnl-label { color: #1b4332; font-weight: 700; }
-    .pnl-profit .pnl-value { color: #1b4332; font-weight: 700; font-size: 16px; }
-    .pnl-crew-val { color: #1b4332; font-weight: 700; font-size: 15px; }
-
-    .btn-row { display: flex; gap: 10px; margin-bottom: 16px; }
-    .btn-outline { flex: 1; background: transparent; color: #1b4332; border: 2px solid #1b4332; border-radius: 12px; padding: 15px 8px; font-size: 15px; font-weight: 700; cursor: pointer; -webkit-appearance: none; transition: background 0.15s; }
-    .btn-outline:active { background: #f0fdf4; }
-    .btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-solid { flex: 1; background: #1b4332; color: #fff; border: 2px solid #1b4332; border-radius: 12px; padding: 15px 8px; font-size: 15px; font-weight: 700; cursor: pointer; -webkit-appearance: none; transition: background 0.15s; }
-    .btn-solid:active { background: #0f2d1a; }
-    .btn-solid:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .test-mode-row { display: flex; align-items: center; padding: 10px 14px; background: #fefce8; border: 1px solid #fde68a; border-radius: 8px; }
-    .test-mode-row label { font-size: 12px; font-weight: 600; color: #92400e; text-transform: none; letter-spacing: 0; margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .test-mode-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: #1b4332; cursor: pointer; flex-shrink: 0; }
-
-    .error-box { background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 10px; color: #b91c1c; padding: 12px 14px; font-size: 14px; margin-bottom: 16px; display: none; }
-
-    .success-screen { text-align: center; }
-    .check-wrap { width: 80px; height: 80px; background: #1b4332; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-    .check-wrap svg { width: 44px; height: 44px; }
-    .success-screen h2 { font-size: 24px; font-weight: 700; color: #1b4332; margin-bottom: 8px; }
-    .success-screen p  { font-size: 15px; color: #6b7280; line-height: 1.6; margin-bottom: 26px; }
-    .btn-reset { background: transparent; border: 2px solid #1b4332; color: #1b4332; border-radius: 12px; padding: 13px 32px; font-size: 15px; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
-
-    .week-header { font-size: 13px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
-    .week-job-row { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
-    .week-job-row:last-child { border-bottom: none; }
-    .week-job-row-header { display: flex; justify-content: space-between; align-items: center; font-size: 15px; }
-    .week-job-name { font-weight: 600; color: #111827; }
-    .week-job-profit { font-weight: 700; color: #1b4332; }
-    .job-expenses-sub { margin-top: 6px; padding-left: 12px; }
-    .exp-row { display: block; font-size: 12px; color: #6b7280; padding: 2px 0; }
-    .week-totals { margin-top: 14px; padding-top: 14px; border-top: 2px solid #e5e7eb; }
-    .week-total-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 15px; font-weight: 700; }
-    .week-total-label { color: #374151; }
-    .week-total-val { color: #1b4332; }
-    .week-empty { text-align: center; color: #9ca3af; font-size: 15px; padding: 30px 0; }
-
-    .job-picker-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
-    .job-pick-card { padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; font-weight: 600; color: #374151; cursor: pointer; transition: border-color 0.15s, background 0.15s; -webkit-tap-highlight-color: transparent; }
-    .job-pick-card:active { background: #f0fdf4; }
-    .job-pick-card.selected { border-color: #1b4332; background: #f0fdf4; color: #1b4332; }
-
-    .photo-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; border: 2px dashed #d1d5db; border-radius: 10px; font-size: 15px; font-weight: 600; color: #6b7280; cursor: pointer; text-transform: none; letter-spacing: 0; }
-    .photo-btn.has-photo { border-color: #1b4332; color: #1b4332; background: #f0fdf4; border-style: solid; }
-    .photo-preview img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
-
-    .exp-list-row { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
-    .exp-list-row:last-child { border-bottom: none; }
-
-    .btn-full { width: 100%; background: #1b4332; color: #fff; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; -webkit-appearance: none; transition: background 0.15s; margin-top: 4px; }
-    .btn-full:active { background: #0f2d1a; }
+    /* ── Buttons ───────────────────────────────────────── */
+    .btn-full {
+      width: 100%; background: #1a3a2a; color: #fff;
+      border: none; border-radius: 12px; padding: 16px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      -webkit-appearance: none; transition: background 0.15s;
+    }
+    .btn-full:active { background: #0f2218; }
     .btn-full:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .field-hint { font-size: 11px; color: #9ca3af; margin-top: 5px; font-style: italic; }
-    .job-preview-pill { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px 12px; font-size: 14px; font-weight: 600; color: #1b4332; margin-bottom: 16px; display: none; }
+    .btn-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .btn-outline {
+      flex: 1; background: transparent; color: #1a3a2a;
+      border: 2px solid #1a3a2a; border-radius: 12px;
+      padding: 14px 8px; font-size: 15px; font-weight: 700;
+      cursor: pointer; -webkit-appearance: none; transition: background 0.15s;
+    }
+    .btn-outline:active { background: #f0fdf4; }
+    .btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* Role picker */
-    .role-picker-wrap { max-width: 480px; margin: 0 auto; padding: 32px 16px 24px; }
-    .role-picker-title { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px; text-align: center; }
-    .role-picker-sub { font-size: 14px; color: #6b7280; text-align: center; margin-bottom: 28px; }
-    .role-btn { width: 100%; background: #fff; color: #1b4332; border: 2px solid #1b4332; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; -webkit-appearance: none; margin-bottom: 12px; transition: background 0.15s; }
-    .role-btn:active { background: #f0fdf4; }
-    .role-section-label { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.6px; margin: 20px 0 10px; text-align: center; }
+    .btn-solid {
+      flex: 1; background: #1a3a2a; color: #fff;
+      border: 2px solid #1a3a2a; border-radius: 12px;
+      padding: 14px 8px; font-size: 15px; font-weight: 700;
+      cursor: pointer; -webkit-appearance: none; transition: background 0.15s;
+    }
+    .btn-solid:active { background: #0f2218; }
+    .btn-solid:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-reset {
+      background: transparent; border: 2px solid #1a3a2a; color: #1a3a2a;
+      border-radius: 12px; padding: 13px 32px;
+      font-size: 15px; font-weight: 700; cursor: pointer; -webkit-appearance: none;
+    }
+    .btn-reset:active { background: #f0fdf4; }
+
+    /* ── Indicators / banners ──────────────────────────── */
+    .indicator { border-radius: 8px; padding: 9px 12px; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+    .indicator.green  { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .indicator.yellow { background: #fefce8; color: #92400e; border: 1px solid #fde68a; }
+    .indicator.red    { background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+    /* ── Test mode ─────────────────────────────────────── */
+    .test-mode-row {
+      display: flex; align-items: center;
+      padding: 10px 14px; background: #fefce8;
+      border: 1px solid #fde68a; border-radius: 8px;
+    }
+    .test-mode-row label {
+      font-size: 12px; font-weight: 600; color: #92400e;
+      text-transform: none; letter-spacing: 0; margin: 0;
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+    }
+    .test-mode-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: #1a3a2a; flex-shrink: 0; }
+
+    /* ── P&L card ──────────────────────────────────────── */
+    .pnl-card {
+      background: #f0fdf4; border: 1.5px solid #bbf7d0;
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 18px;
+    }
+    .pnl-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 14px; }
+    .pnl-lbl { color: #6b7280; font-weight: 500; }
+    .pnl-val { color: #111827; font-weight: 600; }
+    .pnl-divider { border-top: 1px solid #bbf7d0; margin: 8px 0; }
+    .pnl-profit .pnl-lbl { color: #1a3a2a; font-weight: 700; }
+    .pnl-profit .pnl-val { color: #1a3a2a; font-weight: 700; font-size: 16px; }
+    .pnl-crew .pnl-val   { color: #1a3a2a; font-weight: 700; font-size: 15px; }
+
+    /* ── Success screen ────────────────────────────────── */
+    .success-screen { text-align: center; }
+    .check-wrap {
+      width: 76px; height: 76px; background: #1a3a2a; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .check-wrap svg { width: 40px; height: 40px; }
+    .success-screen h2 { font-size: 22px; font-weight: 700; color: #1a3a2a; margin-bottom: 8px; }
+    .success-screen p  { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 24px; }
+
+    /* ── New Job preview pill ──────────────────────────── */
+    .preview-pill {
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
+      padding: 8px 12px; font-size: 13px; font-weight: 600; color: #1a3a2a;
+      margin-bottom: 14px; display: none;
+    }
+
+    /* ── This Week ─────────────────────────────────────── */
+    .week-header { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+    .week-row { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+    .week-row:last-child { border-bottom: none; }
+    .week-row-top { display: flex; justify-content: space-between; align-items: center; }
+    .week-job-name { font-weight: 600; font-size: 15px; color: #111827; }
+    .week-job-profit { font-weight: 700; font-size: 15px; color: #1a3a2a; }
+    .week-exp-sub { margin-top: 5px; padding-left: 10px; }
+    .exp-line { display: block; font-size: 12px; color: #6b7280; padding: 2px 0; }
+    .week-totals { margin-top: 14px; padding-top: 14px; border-top: 2px solid #e5e7eb; }
+    .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 15px; font-weight: 700; }
+    .total-lbl { color: #374151; }
+    .total-val { color: #1a3a2a; }
+
+    /* ── Expenses list ─────────────────────────────────── */
+    .exp-item { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+    .exp-item:last-child { border-bottom: none; }
+    .exp-item-top { display: flex; justify-content: space-between; }
+    .exp-item-job { font-weight: 600; font-size: 15px; color: #111827; }
+    .exp-item-amt { font-weight: 700; font-size: 15px; color: #1a3a2a; }
+    .exp-item-sub { font-size: 12px; color: #6b7280; margin-top: 3px; }
+
+    /* ── Photo upload ──────────────────────────────────── */
+    .photo-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 13px; border: 2px dashed #d1d5db; border-radius: 10px;
+      font-size: 14px; font-weight: 600; color: #6b7280; cursor: pointer;
+      text-transform: none; letter-spacing: 0;
+    }
+    .photo-btn.has-photo { border-color: #1a3a2a; color: #1a3a2a; background: #f0fdf4; border-style: solid; }
+    .photo-thumb { max-width: 100%; border-radius: 8px; margin-top: 10px; display: block; }
+
+    /* ── Empty / loading states ────────────────────────── */
+    .empty-msg   { text-align: center; color: #9ca3af; font-size: 14px; padding: 28px 0; }
+    .loading-msg { text-align: center; color: #9ca3af; font-size: 14px; padding: 20px 0; }
+
+    /* ── Role picker ───────────────────────────────────── */
+    .picker-wrap { max-width: 480px; margin: 0 auto; padding: 36px 20px 32px; }
+    .picker-title { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 8px; text-align: center; }
+    .picker-sub { font-size: 14px; color: #6b7280; text-align: center; margin-bottom: 28px; line-height: 1.5; }
+    .picker-btn {
+      width: 100%; background: #fff; color: #1a3a2a;
+      border: 2px solid #1a3a2a; border-radius: 12px;
+      padding: 16px; font-size: 16px; font-weight: 700;
+      cursor: pointer; -webkit-appearance: none; margin-bottom: 12px;
+      transition: background 0.15s;
+    }
+    .picker-btn:active { background: #f0fdf4; }
+    .picker-divider { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.6px; text-align: center; margin: 16px 0 12px; }
   </style>
 </head>
 <body>
@@ -133,309 +224,478 @@
     <p id="header-sub">Exterior Arts Renovations</p>
   </header>
 
-  <div id="andrew-snapshot" style="display:none;" class="snapshot-wrap">
+  <!-- Andrew weekly summary (shown below header for Andrew only) -->
+  <div id="andrew-snapshot" class="snapshot-bar" style="display:none;">
     <div class="snapshot-grid">
-      <div class="snapshot-card"><div class="snap-val" id="snap-jobs">&#8212;</div><div class="snap-label">Jobs This Week</div></div>
-      <div class="snapshot-card"><div class="snap-val" id="snap-profit">&#8212;</div><div class="snap-label">Total Profit</div></div>
-      <div class="snapshot-card"><div class="snap-val" id="snap-crew">&#8212;</div><div class="snap-label">Crew Pay</div></div>
+      <div class="snap-card"><div class="snap-val" id="snap-jobs">0</div><div class="snap-lbl">Jobs This Week</div></div>
+      <div class="snap-card"><div class="snap-val" id="snap-profit">$0</div><div class="snap-lbl">Total Profit</div></div>
+      <div class="snap-card"><div class="snap-val" id="snap-crew">$0</div><div class="snap-lbl">Crew Pay</div></div>
     </div>
   </div>
 
-  <nav class="bottom-nav" id="bottom-nav"></nav>
+  <!-- Bottom navigation (Trish / Andrew only) -->
+  <nav class="bottom-nav" id="bottom-nav" style="display:none;"></nav>
 
-  <!-- ROLE PICKER (shown when no role detected from URL or localStorage) -->
+  <!-- ══════════════════════════════════════════
+       ROLE PICKER
+       Shown when no role found in URL or localStorage
+  ══════════════════════════════════════════ -->
   <div id="role-picker" style="display:none;">
-    <div class="role-picker-wrap">
-      <div class="role-picker-title">Who are you?</div>
-      <div class="role-picker-sub">Tap your name to get started. This only needs to be done once on this device.</div>
-      <button class="role-btn" onclick="selectRole('trish')">Trish</button>
-      <button class="role-btn" onclick="selectRole('andrew')">Andrew</button>
-      <div class="role-section-label">Crew</div>
-      <button class="role-btn" onclick="selectRole('crew','Mark')">Mark</button>
-      <button class="role-btn" onclick="selectRole('crew','Daniel')">Daniel</button>
-      <button class="role-btn" onclick="selectRole('crew','Evan')">Evan</button>
+    <div class="picker-wrap">
+      <div class="picker-title">Who are you?</div>
+      <div class="picker-sub">Tap your name to get started.<br>This only needs to be done once on this device.</div>
+      <button class="picker-btn" onclick="selectRole('trish')">Trish</button>
+      <button class="picker-btn" onclick="selectRole('andrew')">Andrew</button>
+      <div class="picker-divider">Crew</div>
+      <button class="picker-btn" onclick="selectRole('crew','Mark')">Mark</button>
+      <button class="picker-btn" onclick="selectRole('crew','Daniel')">Daniel</button>
+      <button class="picker-btn" onclick="selectRole('crew','Evan')">Evan</button>
     </div>
   </div>
 
-  <!-- NEW JOB TAB (Trish only) -->
-  <div class="tab-pane" id="tab-new-job">
+  <!-- ══════════════════════════════════════════
+       CREW SCREEN
+       Single full-screen view — no tabs, no nav
+  ══════════════════════════════════════════ -->
+  <div id="crew-screen" style="display:none;">
     <main>
-      <div id="new-job-form-screen">
+      <div id="crew-form-wrap">
         <div class="card">
-          <div class="error-box" id="new-job-error-box"></div>
+          <div class="indicator red" id="crew-error" style="display:none;"></div>
           <div class="field">
-            <label for="customerName">Customer Name</label>
-            <input type="text" id="customerName" placeholder="e.g. Mike Johnson" oninput="updateJobPreview()">
-            <div class="field-hint">Last name will be used as the job display name.</div>
-          </div>
-          <div class="field">
-            <label for="jobAddress">Address</label>
-            <input type="text" id="jobAddress" placeholder="e.g. 1247 Cedar St" oninput="updateJobPreview()">
-          </div>
-          <div class="job-preview-pill" id="job-preview-pill"></div>
-          <div class="field">
-            <label for="newBidAmount">Bid Amount ($)</label>
-            <input type="number" id="newBidAmount" min="0.01" step="0.01" placeholder="0.00">
-          </div>
-          <button id="createJobBtn" class="btn-full" onclick="createJob()">Create Job</button>
-        </div>
-      </div>
-      <div id="new-job-success-screen" class="card success-screen" style="display:none;">
-        <div class="check-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <h2>Job Created!</h2>
-        <p id="new-job-success-msg"></p>
-        <button class="btn-reset" onclick="resetNewJobForm()">Add Another</button>
-      </div>
-    </main>
-  </div>
-
-  <!-- CLOSE JOB TAB -->
-  <div class="tab-pane" id="tab-close">
-    <main>
-      <div id="form-screen">
-        <div class="card">
-          <div class="error-box" id="error-box"></div>
-          <div class="field">
-            <label for="jobSelect">Job Name</label>
-            <select id="jobSelect" onchange="handleJobSelect()">
-              <option value="">Select a job&#8230;</option>
+            <label for="crewJobSelect">Select Job</label>
+            <select id="crewJobSelect" onchange="validateCrewForm()">
+              <option value="">Loading jobs&#8230;</option>
             </select>
           </div>
-          <div class="expense-indicator" id="expense-indicator" style="display:none;"></div>
           <div class="field">
-            <label for="materialsCost">Total Materials Cost ($)</label>
-            <input type="number" id="materialsCost" min="0" step="0.01" placeholder="0.00" oninput="recalc()">
-          </div>
-          <div class="pnl-card">
-            <div class="pnl-row"><span class="pnl-label">Job</span><span class="pnl-value" id="pnl-job">&#8212;</span></div>
-            <div class="pnl-row"><span class="pnl-label">Bid</span><span class="pnl-value" id="pnl-bid">&#8212;</span></div>
-            <div class="pnl-row"><span class="pnl-label">Materials</span><span class="pnl-value" id="pnl-materials">&#8212;</span></div>
-            <div class="pnl-divider"></div>
-            <div class="pnl-row pnl-profit"><span class="pnl-label">Profit</span><span class="pnl-value" id="pnl-profit">&#8212;</span></div>
-            <div class="pnl-row"><span class="pnl-label">Crew Leader Pay</span><span class="pnl-value pnl-crew-val" id="pnl-crew">&#8212;</span></div>
-          </div>
-          <div class="btn-row">
-            <button id="saveBtn" class="btn-outline" onclick="handleSave(false)">Save Job</button>
-            <button id="smsBtn" class="btn-solid" onclick="handleSave(true)">Save + Send SMS &#10003;</button>
-          </div>
-          <div class="test-mode-row">
-            <label><input type="checkbox" id="testMode"> Test Mode &#8212; SMS goes to Ben only</label>
-          </div>
-        </div>
-      </div>
-      <div id="success-screen" class="card success-screen" style="display:none;">
-        <div class="check-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <h2 id="success-title">Done!</h2>
-        <p id="success-msg">Job saved successfully.</p>
-        <button class="btn-reset" onclick="resetForm()">Close Another Job</button>
-      </div>
-    </main>
-  </div>
-
-  <!-- THIS WEEK TAB -->
-  <div class="tab-pane" id="tab-week">
-    <main>
-      <div class="card">
-        <div class="week-header" id="week-header">This Week</div>
-        <div id="week-list"></div>
-        <div class="week-totals" id="week-totals" style="display:none;">
-          <div class="week-total-row"><span class="week-total-label">Total Profit</span><span class="week-total-val" id="week-total-profit">$0.00</span></div>
-          <div class="week-total-row"><span class="week-total-label">Crew Leader Pay</span><span class="week-total-val" id="week-total-crew">$0.00</span></div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- LOG EXPENSE TAB (crew only) -->
-  <div class="tab-pane" id="tab-log-expense">
-    <main>
-      <div id="expense-form-screen">
-        <div class="card">
-          <div class="error-box" id="expense-error-box"></div>
-          <div class="field">
-            <label>Select Job</label>
-            <div id="job-picker-list" class="job-picker-list"><p style="color:#9ca3af;font-size:14px;text-align:center;padding:16px 0;">Loading jobs&#8230;</p></div>
-          </div>
-          <div class="field">
-            <label for="expenseAmount">Amount ($)</label>
-            <input type="number" id="expenseAmount" min="0.01" step="0.01" placeholder="0.00">
+            <label for="crewAmount">Amount ($)</label>
+            <input type="number" id="crewAmount" min="0.01" step="0.01" placeholder="0.00" oninput="validateCrewForm()">
           </div>
           <div class="field">
             <label>Receipt Photo <span style="font-weight:400;text-transform:none;font-size:10px;letter-spacing:0;">(optional)</span></label>
-            <label class="photo-btn" id="photo-btn-label" for="receiptPhoto">&#128247; Tap to attach photo</label>
-            <input type="file" id="receiptPhoto" accept="image/*" style="display:none;" onchange="handlePhotoSelect(event)">
-            <div class="photo-preview" id="photo-preview"></div>
+            <label class="photo-btn" id="crew-photo-btn" for="crewReceiptPhoto">&#128247; Tap to attach photo</label>
+            <input type="file" id="crewReceiptPhoto" accept="image/*" capture="environment" style="display:none;" onchange="handleCrewPhoto(event)">
+            <div id="crew-photo-preview"></div>
           </div>
-          <button id="expenseSubmitBtn" class="btn-full" onclick="submitExpense()">Log Expense</button>
+          <button id="crewSubmitBtn" class="btn-full" onclick="submitCrewExpense()" disabled>Log Expense</button>
         </div>
       </div>
-      <div id="expense-success-screen" class="card success-screen" style="display:none;">
+      <div id="crew-success-wrap" class="card success-screen" style="display:none;">
         <div class="check-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
         <h2>Nice work!</h2>
-        <p id="expense-success-msg"></p>
-        <button class="btn-reset" onclick="resetExpenseForm()">Log Another</button>
+        <p id="crew-success-msg"></p>
+        <button class="btn-reset" onclick="resetCrewForm()">Log Another</button>
       </div>
     </main>
   </div>
 
-  <!-- EXPENSES VIEW TAB -->
-  <div class="tab-pane" id="tab-expenses-view">
-    <main>
-      <div class="card">
-        <div class="week-header">All Expenses</div>
-        <div id="expenses-view-list"><div class="week-empty">Loading&#8230;</div></div>
-      </div>
-    </main>
-  </div>
+  <!-- ══════════════════════════════════════════
+       MAIN APP — Trish / Andrew
+       Tab panes driven by bottom nav
+  ══════════════════════════════════════════ -->
+  <div id="app-content" class="has-nav" style="display:none;">
+
+    <!-- ── NEW JOB TAB (Trish only) ── -->
+    <div class="tab-pane" id="tab-new-job">
+      <main>
+        <div class="card" id="nj-form-wrap">
+          <div class="indicator red" id="nj-error" style="display:none;"></div>
+          <div class="field">
+            <label for="njName">Customer Name</label>
+            <input type="text" id="njName" placeholder="e.g. Mike Johnson" oninput="onNJInput()">
+            <div class="field-hint">Last name + address form the job name.</div>
+          </div>
+          <div class="field">
+            <label for="njAddr">Address</label>
+            <input type="text" id="njAddr" placeholder="e.g. 1247 Cedar St" oninput="onNJInput()">
+          </div>
+          <div class="preview-pill" id="nj-preview"></div>
+          <div class="field">
+            <label for="njBid">Bid Amount ($)</label>
+            <input type="number" id="njBid" min="0.01" step="0.01" placeholder="0.00" oninput="onNJInput()">
+          </div>
+          <button id="njSubmitBtn" class="btn-full" onclick="createJob()" disabled>Create Job</button>
+        </div>
+        <div class="card success-screen" id="nj-success-wrap" style="display:none;">
+          <div class="check-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <h2>Job Created!</h2>
+          <p id="nj-success-msg"></p>
+          <button class="btn-reset" onclick="resetNewJob()">Add Another</button>
+        </div>
+      </main>
+    </div>
+
+    <!-- ── CLOSE JOB TAB ── -->
+    <div class="tab-pane" id="tab-close">
+      <main>
+        <div class="card" id="cj-form-wrap">
+          <div class="indicator red" id="cj-error" style="display:none;"></div>
+          <div class="field">
+            <label for="cjJobSelect">Job Name</label>
+            <select id="cjJobSelect" onchange="onJobSelected()">
+              <option value="">Loading jobs&#8230;</option>
+            </select>
+          </div>
+          <div class="indicator" id="cj-materials-indicator" style="display:none;"></div>
+          <div class="field">
+            <label for="cjMaterials">Total Materials Cost ($)</label>
+            <input type="number" id="cjMaterials" min="0" step="0.01" placeholder="0.00" oninput="updatePnL()">
+          </div>
+          <div class="pnl-card">
+            <div class="pnl-row"><span class="pnl-lbl">Job</span><span class="pnl-val" id="pnl-job">&#8212;</span></div>
+            <div class="pnl-row"><span class="pnl-lbl">Bid</span><span class="pnl-val" id="pnl-bid">&#8212;</span></div>
+            <div class="pnl-row"><span class="pnl-lbl">Materials</span><span class="pnl-val" id="pnl-materials">&#8212;</span></div>
+            <div class="pnl-divider"></div>
+            <div class="pnl-row pnl-profit"><span class="pnl-lbl">Profit</span><span class="pnl-val" id="pnl-profit">&#8212;</span></div>
+            <div class="pnl-row pnl-crew"><span class="pnl-lbl">Crew Leader Pay</span><span class="pnl-val" id="pnl-crew-pay">&#8212;</span></div>
+          </div>
+          <div class="btn-row">
+            <button id="cjSaveBtn" class="btn-outline" onclick="closeJob(false)">Save Job</button>
+            <button id="cjSmsBtn"  class="btn-solid"   onclick="closeJob(true)">Save + Send SMS &#10003;</button>
+          </div>
+          <div class="test-mode-row">
+            <label><input type="checkbox" id="cjTestMode"> Test Mode &#8212; SMS goes to Ben only</label>
+          </div>
+        </div>
+        <div class="card success-screen" id="cj-success-wrap" style="display:none;">
+          <div class="check-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <h2 id="cj-success-title">Done!</h2>
+          <p id="cj-success-msg"></p>
+          <button class="btn-reset" onclick="resetCloseJob()">Close Another</button>
+        </div>
+      </main>
+    </div>
+
+    <!-- ── THIS WEEK TAB ── -->
+    <div class="tab-pane" id="tab-week">
+      <main>
+        <div class="card">
+          <div class="week-header" id="week-header-text">This Week</div>
+          <div id="week-list"><div class="loading-msg">Loading&#8230;</div></div>
+          <div class="week-totals" id="week-totals" style="display:none;">
+            <div class="total-row"><span class="total-lbl">Total Profit</span><span class="total-val" id="week-total-profit">$0.00</span></div>
+            <div class="total-row"><span class="total-lbl">Total Crew Pay</span><span class="total-val" id="week-total-crew">$0.00</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ── EXPENSES TAB ── -->
+    <div class="tab-pane" id="tab-expenses-view">
+      <main>
+        <div class="card">
+          <div class="week-header">All Expenses</div>
+          <div id="expenses-list"><div class="loading-msg">Loading&#8230;</div></div>
+        </div>
+      </main>
+    </div>
+
+  </div><!-- #app-content -->
 
   <script>
-    // ── Role detection ──────────────────────────────────────────────────────────
-    // Priority: URL param > localStorage fallback > role picker UI.
-    // When ?role= is in the URL, persist it to localStorage so home-screen
-    // PWA launches (which strip query params) still get the correct role.
-    var urlParams = new URLSearchParams(window.location.search);
-    var urlRole   = (urlParams.get('role') || '').toLowerCase();
-    var urlCrew   = urlParams.get('name') || '';
-
-    var role = '', crewName = '';
-
-    if (urlRole) {
-      // URL has explicit role — trust it and persist
-      role = urlRole;
-      crewName = urlCrew;
-      try {
-        localStorage.setItem('ea_role', role);
-        if (crewName) localStorage.setItem('ea_crew_name', crewName);
-        else localStorage.removeItem('ea_crew_name');
-      } catch(e) {}
-    } else {
-      // No URL role — try localStorage (covers home-screen PWA launches)
-      try {
-        role = localStorage.getItem('ea_role') || '';
-        crewName = localStorage.getItem('ea_crew_name') || '';
-      } catch(e) { role = ''; crewName = ''; }
-    }
-
-    var isCrew     = role === 'crew';
-    var isTrish    = role === 'trish';
-    var isAndrew   = role === 'andrew';
-    var isFullView = !isCrew;
-    var hasRole    = role !== '';
-
+    // ─── Webhooks ───────────────────────────────────────────────────────────
     var GET_JOBS_URL     = 'https://hook.us2.make.com/zvg1lf2a8on7fqgknnj3w9xfe19wfjtg';
     var SUBMIT_URL       = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
     var LOG_EXPENSE_URL  = 'https://hook.us2.make.com/d34v6x6fggpxozjyhf8aojhondp824hx';
     var GET_EXPENSES_URL = 'https://hook.us2.make.com/fnbs3jc71w8m3l86wn0ns1t085atdosj';
     var NEW_JOB_URL      = 'https://hook.us2.make.com/rxi8k7sef51wjhp78sdghd58w91q1jm2';
 
-    var allRows = [], jobsData = {}, allExpenses = [];
-    var selectedExpJob = null, receiptBase64 = null;
+    // ─── Role detection ─────────────────────────────────────────────────────
+    // Priority: URL param → localStorage → role picker
+    var urlParams = new URLSearchParams(window.location.search);
+    var urlRole   = (urlParams.get('role') || '').toLowerCase();
+    var urlName   = urlParams.get('name') || '';
+    var role = '', crewName = '';
 
-    // Called from role picker — persist role then reload with ?role= param
+    if (urlRole) {
+      role = urlRole; crewName = urlName;
+      try {
+        localStorage.setItem('ea_role', role);
+        if (crewName) localStorage.setItem('ea_crew_name', crewName);
+        else localStorage.removeItem('ea_crew_name');
+      } catch(e) {}
+    } else {
+      try {
+        role     = localStorage.getItem('ea_role') || '';
+        crewName = localStorage.getItem('ea_crew_name') || '';
+      } catch(e) {}
+    }
+
+    var isCrew   = (role === 'crew');
+    var isTrish  = (role === 'trish');
+    var isAndrew = (role === 'andrew');
+    var hasRole  = (role !== '');
+
+    // ─── Shared state ───────────────────────────────────────────────────────
+    var allRows = [], jobsData = {}, allExpenses = [];
+    var crewReceiptBase64 = null;
+
+    // ─── Utilities ──────────────────────────────────────────────────────────
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    function fmt$(n) { return '$' + (parseFloat(n) || 0).toFixed(2); }
+
+    // Week bounds: Sunday through Saturday of the current week
+    function getWeekBounds() {
+      var now = new Date();
+      var day = now.getDay(); // 0 = Sunday
+      var sun = new Date(now);
+      sun.setDate(now.getDate() - day);
+      sun.setHours(0, 0, 0, 0);
+      var sat = new Date(sun);
+      sat.setDate(sun.getDate() + 6);
+      sat.setHours(23, 59, 59, 999);
+      return { sun: sun, sat: sat };
+    }
+    var MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    function fmtDate(d) { return MONTHS[d.getMonth()] + ' ' + d.getDate(); }
+
+    // ─── API fetchers (all cache:no-store) ──────────────────────────────────
+    async function fetchJobs() {
+      var r = await fetch(GET_JOBS_URL, { cache: 'no-store' });
+      if (!r.ok) throw new Error('jobs fetch failed');
+      return await r.json();
+    }
+    async function fetchExpenses() {
+      var r = await fetch(GET_EXPENSES_URL, { cache: 'no-store' });
+      if (!r.ok) throw new Error('expenses fetch failed');
+      return await r.json();
+    }
+
+    // ─── Init ────────────────────────────────────────────────────────────────
+    function init() {
+      // Unregister any service workers left from previous app versions
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.unregister(); });
+        });
+      }
+
+      if (!hasRole) {
+        document.getElementById('role-picker').style.display = 'block';
+        return;
+      }
+
+      if (isCrew) {
+        document.getElementById('header-sub').textContent =
+          'Hey ' + (crewName || 'there') + ' — log your materials';
+        document.getElementById('crew-screen').style.display = 'block';
+        loadCrewJobs();
+        return;
+      }
+
+      // Trish or Andrew
+      document.getElementById('header-sub').textContent = isTrish
+        ? 'Trish — Exterior Arts Renovations'
+        : 'Andrew — Exterior Arts Renovations';
+      if (isAndrew) document.getElementById('andrew-snapshot').style.display = 'block';
+
+      buildNav();
+      document.getElementById('bottom-nav').style.display = 'flex';
+      document.getElementById('app-content').style.display = 'block';
+      switchTab(isTrish ? 'new-job' : 'week');
+    }
+
+    function buildNav() {
+      var nav  = document.getElementById('bottom-nav');
+      nav.innerHTML = '';
+      var tabs = isTrish
+        ? [
+            { id: 'new-job',       label: 'New Job'   },
+            { id: 'close',         label: 'Close Job'  },
+            { id: 'week',          label: 'This Week'  },
+            { id: 'expenses-view', label: 'Expenses'   }
+          ]
+        : [
+            { id: 'week',          label: 'This Week'  },
+            { id: 'close',         label: 'Close Job'  },
+            { id: 'expenses-view', label: 'Expenses'   }
+          ];
+      tabs.forEach(function(t) {
+        var btn = document.createElement('button');
+        btn.className = 'nav-btn';
+        btn.id = 'nav-' + t.id;
+        btn.textContent = t.label;
+        btn.onclick = function() { switchTab(t.id); };
+        nav.appendChild(btn);
+      });
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.nav-btn').forEach(function(b)  { b.classList.remove('active'); });
+      var pane = document.getElementById('tab-' + tab);
+      var btn  = document.getElementById('nav-' + tab);
+      if (pane) pane.classList.add('active');
+      if (btn)  btn.classList.add('active');
+      // Re-fetch live data every time a data tab becomes visible
+      if (tab === 'close')         loadAndRefreshClose();
+      if (tab === 'week')          loadAndRenderWeek();
+      if (tab === 'expenses-view') loadAndRenderExpenses();
+    }
+
     function selectRole(r, name) {
       try {
         localStorage.setItem('ea_role', r);
         if (name) localStorage.setItem('ea_crew_name', name);
         else localStorage.removeItem('ea_crew_name');
       } catch(e) {}
-      var url = window.location.pathname + '?role=' + r + (name ? '&name=' + encodeURIComponent(name) : '');
-      window.location.href = url;
+      window.location.href = window.location.pathname
+        + '?role=' + r
+        + (name ? '&name=' + encodeURIComponent(name) : '');
     }
 
-    function initUI() {
-      if (!hasRole) {
-        document.getElementById('role-picker').style.display = 'block';
-        document.getElementById('bottom-nav').style.display = 'none';
-        return;
-      }
-      var sub = document.getElementById('header-sub');
-      if (isCrew && crewName)  sub.textContent = 'Hey ' + crewName + ' — log your materials';
-      else if (isTrish)        sub.textContent = 'Trish — Exterior Arts Renovations';
-      else if (isAndrew)       sub.textContent = 'Andrew — Exterior Arts Renovations';
-      if (isAndrew) document.getElementById('andrew-snapshot').style.display = 'block';
-      buildNav();
-      switchTab(isCrew ? 'log-expense' : (isTrish ? 'new-job' : 'close'));
-    }
+    // ═══════════════════════════════════════════════════════════
+    //  CREW — Log Expense (single screen)
+    // ═══════════════════════════════════════════════════════════
 
-    function buildNav() {
-      var nav = document.getElementById('bottom-nav');
-      nav.innerHTML = '';
-      var tabs = [];
-      if (isTrish)    tabs.push({id:'new-job',      label:'New Job'});
-      if (isFullView) tabs.push({id:'close',         label:'Close Job'});
-      if (isFullView) tabs.push({id:'week',          label:'This Week'});
-      if (isCrew)     tabs.push({id:'log-expense',   label:'Log Expense'});
-      if (isFullView) tabs.push({id:'expenses-view', label:'Expenses'});
-      tabs.forEach(function(t) {
-        var btn = document.createElement('button');
-        btn.className = 'nav-btn'; btn.id = 'nav-' + t.id;
-        btn.textContent = t.label; btn.onclick = function() { switchTab(t.id); };
-        nav.appendChild(btn);
-      });
-    }
-
-    async function loadJobs() {
+    async function loadCrewJobs() {
+      var sel = document.getElementById('crewJobSelect');
+      sel.innerHTML = '<option value="">Loading&#8230;</option>';
       try {
-        var resp = await fetch(GET_JOBS_URL);
-        if (!resp.ok) return;
-        var rows = await resp.json();
-        allRows = rows;
-        jobsData = {};
-        rows.forEach(function(r) {
-          var st = (r['Status'] || '').trim().toLowerCase();
-          if (st !== 'active') return;
-          var n = String(r['Job Name'] || '').trim();
-          var b = parseFloat(r['Bid Amount']) || 0;
-          if (n) jobsData[n] = b;
+        var rows   = await fetchJobs();
+        var active = rows.filter(function(r) {
+          return (r['Status'] || '').trim().toLowerCase() === 'active';
         });
-        populateJobSelect();
-        populateJobPicker();
-        if (isAndrew) updateAndrewSnapshot();
-      } catch(e) {}
+        if (!active.length) {
+          sel.innerHTML = '<option value="">No active jobs right now &#8212; check back soon</option>';
+        } else {
+          sel.innerHTML = '<option value="">Select a job&#8230;</option>';
+          active.forEach(function(r) {
+            var n = String(r['Job Name'] || '').trim();
+            if (!n) return;
+            var o = document.createElement('option');
+            o.value = n; o.textContent = n;
+            sel.appendChild(o);
+          });
+        }
+      } catch(e) {
+        sel.innerHTML = '<option value="">Could not load jobs &#8212; try refreshing</option>';
+      }
+      validateCrewForm();
     }
 
-    async function loadExpenses() {
+    function validateCrewForm() {
+      var job = document.getElementById('crewJobSelect').value;
+      var amt = parseFloat(document.getElementById('crewAmount').value);
+      document.getElementById('crewSubmitBtn').disabled =
+        !(job && !isNaN(amt) && amt > 0);
+    }
+
+    function handleCrewPhoto(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        crewReceiptBase64 = e.target.result;
+        var lbl = document.getElementById('crew-photo-btn');
+        lbl.textContent = '✓ Photo attached';
+        lbl.classList.add('has-photo');
+        document.getElementById('crew-photo-preview').innerHTML =
+          '<img src="' + crewReceiptBase64 + '" class="photo-thumb">';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function submitCrewExpense() {
+      var errEl = document.getElementById('crew-error');
+      errEl.style.display = 'none';
+      var job = document.getElementById('crewJobSelect').value;
+      var amt = parseFloat(document.getElementById('crewAmount').value);
+      if (!job || isNaN(amt) || amt <= 0) {
+        errEl.textContent = 'Please select a job and enter an amount.';
+        errEl.style.display = 'block'; return;
+      }
+      var btn = document.getElementById('crewSubmitBtn');
+      btn.disabled = true; btn.textContent = 'Logging…';
       try {
-        var resp = await fetch(GET_EXPENSES_URL);
-        allExpenses = resp.ok ? await resp.json() : [];
-      } catch(e) { allExpenses = []; }
+        var resp = await fetch(LOG_EXPENSE_URL, {
+          method: 'POST', cache: 'no-store',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jobName:    job,
+            amount:     amt,
+            crewName:   crewName || 'Unknown',
+            receiptUrl: crewReceiptBase64 ? '[photo attached]' : ''
+          })
+        });
+        if (!resp.ok) throw new Error('server error');
+        document.getElementById('crew-success-msg').textContent =
+          'Logged ' + fmt$(amt) + ' to ' + job + ' — nice work.';
+        document.getElementById('crew-form-wrap').style.display = 'none';
+        document.getElementById('crew-success-wrap').style.display = 'block';
+      } catch(e) {
+        errEl.textContent = 'Failed to log — please try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Log Expense';
+      }
     }
 
-    function updateJobPreview() {
-      var name = document.getElementById('customerName').value.trim();
-      var addr = document.getElementById('jobAddress').value.trim();
-      var pill = document.getElementById('job-preview-pill');
+    function resetCrewForm() {
+      crewReceiptBase64 = null;
+      document.getElementById('crewJobSelect').value = '';
+      document.getElementById('crewAmount').value = '';
+      document.getElementById('crewReceiptPhoto').value = '';
+      document.getElementById('crew-photo-preview').innerHTML = '';
+      document.getElementById('crew-error').style.display = 'none';
+      var lbl = document.getElementById('crew-photo-btn');
+      lbl.textContent = '📷 Tap to attach photo';
+      lbl.classList.remove('has-photo');
+      document.getElementById('crew-success-wrap').style.display = 'none';
+      document.getElementById('crew-form-wrap').style.display = 'block';
+      loadCrewJobs();
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  NEW JOB TAB (Trish only)
+    // ═══════════════════════════════════════════════════════════
+
+    function onNJInput() {
+      var name = document.getElementById('njName').value.trim();
+      var addr = document.getElementById('njAddr').value.trim();
+      var bid  = parseFloat(document.getElementById('njBid').value);
+      // Live preview pill
+      var pill = document.getElementById('nj-preview');
       if (name && addr) {
         var parts = name.split(' ').filter(Boolean);
-        var lastName = parts.length > 1 ? parts[parts.length - 1] : (parts[0] || '');
-        pill.textContent = 'Job name: ' + lastName + ' — ' + addr;
+        var last  = parts.length > 1 ? parts[parts.length - 1] : (parts[0] || '');
+        pill.textContent = 'Job name: ' + last + ' — ' + addr;
         pill.style.display = 'block';
       } else {
         pill.style.display = 'none';
       }
+      // Button enabled only when all three fields are valid
+      document.getElementById('njSubmitBtn').disabled =
+        !(name && addr && !isNaN(bid) && bid > 0);
     }
 
     async function createJob() {
-      var errEl = document.getElementById('new-job-error-box');
+      var errEl = document.getElementById('nj-error');
       errEl.style.display = 'none';
-      var customerName = document.getElementById('customerName').value.trim();
-      var address      = document.getElementById('jobAddress').value.trim();
-      var bidAmount    = parseFloat(document.getElementById('newBidAmount').value);
-      if (!customerName) { errEl.textContent = 'Please enter a customer name.'; errEl.style.display = 'block'; return; }
-      if (!address)      { errEl.textContent = 'Please enter an address.'; errEl.style.display = 'block'; return; }
-      if (isNaN(bidAmount) || bidAmount <= 0) { errEl.textContent = 'Please enter a bid amount greater than $0.'; errEl.style.display = 'block'; return; }
-      var btn = document.getElementById('createJobBtn');
+      var name = document.getElementById('njName').value.trim();
+      var addr = document.getElementById('njAddr').value.trim();
+      var bid  = parseFloat(document.getElementById('njBid').value);
+      var btn  = document.getElementById('njSubmitBtn');
       btn.disabled = true; btn.textContent = 'Creating…';
       try {
-        var resp = await fetch(NEW_JOB_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({customerName: customerName, address: address, bidAmount: bidAmount})});
+        var resp = await fetch(NEW_JOB_URL, {
+          method: 'POST', cache: 'no-store',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customerName: name, address: addr, bidAmount: bid })
+        });
         if (!resp.ok) throw new Error('server error');
-        var parts    = customerName.split(' ').filter(Boolean);
-        var lastName = parts.length > 1 ? parts[parts.length - 1] : parts[0];
-        var jobName  = lastName + ' — ' + address;
-        document.getElementById('new-job-success-msg').textContent = '"' + jobName + '" added for $' + bidAmount.toFixed(2) + '. It is now live in the dropdown.';
-        document.getElementById('new-job-form-screen').style.display = 'none';
-        document.getElementById('new-job-success-screen').style.display = 'block';
-        loadJobs();
+        var parts   = name.split(' ').filter(Boolean);
+        var last    = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+        var jobName = last + ' — ' + addr;
+        document.getElementById('nj-success-msg').textContent =
+          '"' + jobName + '" created for ' + fmt$(bid) + '. Now live in Close Job.';
+        document.getElementById('nj-form-wrap').style.display = 'none';
+        document.getElementById('nj-success-wrap').style.display = 'block';
+        // Auto-switch to Close Job after user sees confirmation
+        setTimeout(function() { switchTab('close'); }, 1800);
       } catch(e) {
         errEl.textContent = 'Failed to create job — please try again.';
         errEl.style.display = 'block';
@@ -443,251 +703,312 @@
       }
     }
 
-    function resetNewJobForm() {
-      document.getElementById('customerName').value = '';
-      document.getElementById('jobAddress').value = '';
-      document.getElementById('newBidAmount').value = '';
-      document.getElementById('new-job-error-box').style.display = 'none';
-      document.getElementById('job-preview-pill').style.display = 'none';
-      var btn = document.getElementById('createJobBtn');
-      btn.disabled = false; btn.textContent = 'Create Job';
-      document.getElementById('new-job-success-screen').style.display = 'none';
-      document.getElementById('new-job-form-screen').style.display = 'block';
+    function resetNewJob() {
+      document.getElementById('njName').value = '';
+      document.getElementById('njAddr').value = '';
+      document.getElementById('njBid').value = '';
+      document.getElementById('nj-preview').style.display = 'none';
+      document.getElementById('nj-error').style.display = 'none';
+      document.getElementById('nj-success-wrap').style.display = 'none';
+      document.getElementById('nj-form-wrap').style.display = 'block';
+      onNJInput();
     }
 
-    function populateJobSelect() {
-      var sel = document.getElementById('jobSelect');
-      var cur = sel.value;
-      sel.innerHTML = '<option value="">Select a job…</option>';
-      Object.keys(jobsData).sort().forEach(function(n) {
-        var o = document.createElement('option');
-        o.value = n; o.textContent = n;
-        sel.appendChild(o);
-      });
-      if (cur && jobsData[cur]) sel.value = cur;
-    }
+    // ═══════════════════════════════════════════════════════════
+    //  CLOSE JOB TAB
+    // ═══════════════════════════════════════════════════════════
 
-    async function handleJobSelect() {
-      recalc();
-      var jobName = document.getElementById('jobSelect').value;
-      var ind = document.getElementById('expense-indicator');
-      if (!jobName) { ind.style.display = 'none'; return; }
+    async function loadAndRefreshClose() {
+      var sel = document.getElementById('cjJobSelect');
+      sel.innerHTML = '<option value="">Loading jobs…</option>';
+      document.getElementById('cjMaterials').value = '';
+      document.getElementById('cj-materials-indicator').style.display = 'none';
+      updatePnL();
       try {
-        var resp = await fetch(GET_EXPENSES_URL);
-        if (!resp.ok) { ind.style.display = 'none'; return; }
-        var exps = await resp.json();
-        var jobExps = exps.filter(function(e) { return String(e['Job Name'] || '').trim().toLowerCase() === jobName.toLowerCase(); });
-        var total = jobExps.reduce(function(s, e) { return s + (parseFloat(e['Amount']) || 0); }, 0);
+        var rows = await fetchJobs();
+        allRows  = rows;
+        jobsData = {};
+        rows.forEach(function(r) {
+          if ((r['Status'] || '').trim().toLowerCase() !== 'active') return;
+          var n = String(r['Job Name'] || '').trim();
+          var b = parseFloat(r['Bid Amount']) || 0;
+          if (n) jobsData[n] = b;
+        });
+        populateCJSelect();
+        if (isAndrew) updateAndrewSnapshot();
+      } catch(e) {
+        sel.innerHTML = '<option value="">Could not load jobs — try again</option>';
+      }
+    }
+
+    function populateCJSelect() {
+      var sel   = document.getElementById('cjJobSelect');
+      var names = Object.keys(jobsData).sort();
+      sel.innerHTML = '<option value="">Select a job…</option>';
+      if (!names.length) {
+        var o = document.createElement('option');
+        o.value = ''; o.disabled = true;
+        o.textContent = isTrish
+          ? 'No active jobs yet — create one in New Job tab'
+          : 'No active jobs yet';
+        sel.appendChild(o);
+      } else {
+        names.forEach(function(n) {
+          var o = document.createElement('option');
+          o.value = n; o.textContent = n;
+          sel.appendChild(o);
+        });
+      }
+      updatePnL();
+    }
+
+    async function onJobSelected() {
+      var jobName = document.getElementById('cjJobSelect').value;
+      var ind     = document.getElementById('cj-materials-indicator');
+      document.getElementById('cjMaterials').value = '';
+      ind.style.display = 'none';
+      updatePnL();
+      if (!jobName) return;
+      try {
+        var exps    = await fetchExpenses();
+        var jobExps = exps.filter(function(e) {
+          return String(e['Job Name'] || '').trim().toLowerCase() === jobName.toLowerCase();
+        });
+        var total = jobExps.reduce(function(s, e) {
+          return s + (parseFloat(e['Amount']) || 0);
+        }, 0);
         if (jobExps.length > 0) {
-          document.getElementById('materialsCost').value = total.toFixed(2);
-          ind.className = 'expense-indicator green';
-          ind.textContent = '✓ Auto-filled from ' + jobExps.length + ' logged expense' + (jobExps.length > 1 ? 's' : '') + ' ($' + total.toFixed(2) + ')';
+          document.getElementById('cjMaterials').value = total.toFixed(2);
+          ind.className   = 'indicator green';
+          ind.textContent = '✓ Auto-filled from '
+            + jobExps.length + ' logged expense'
+            + (jobExps.length !== 1 ? 's' : '')
+            + ' (' + fmt$(total) + ')';
         } else {
-          document.getElementById('materialsCost').value = '';
-          ind.className = 'expense-indicator yellow';
-          ind.textContent = '⚠ No expenses logged — enter materials cost manually';
+          ind.className   = 'indicator yellow';
+          ind.textContent = '⚠ No expenses logged yet — enter materials cost manually';
         }
         ind.style.display = 'block';
-        recalc();
-      } catch(e) { ind.style.display = 'none'; }
+        updatePnL();
+      } catch(e) {
+        ind.style.display = 'none';
+      }
     }
 
-    function recalc() {
-      var name = document.getElementById('jobSelect').value;
-      var cost = parseFloat(document.getElementById('materialsCost').value) || 0;
+    function updatePnL() {
+      var name = document.getElementById('cjJobSelect').value;
+      var mat  = parseFloat(document.getElementById('cjMaterials').value) || 0;
       document.getElementById('pnl-job').textContent = name || '—';
       var bid = jobsData[name];
       if (bid !== undefined && bid > 0) {
-        var profit = bid - cost, margin = ((profit / bid) * 100).toFixed(1), crewPay = Math.max(0, profit) * 0.15;
-        document.getElementById('pnl-bid').textContent = '$' + bid.toFixed(2);
-        document.getElementById('pnl-materials').textContent = cost > 0 ? '-$' + cost.toFixed(2) : '$0.00';
-        document.getElementById('pnl-profit').textContent = '$' + profit.toFixed(2) + ' (' + margin + '%)';
-        document.getElementById('pnl-crew').textContent = '$' + crewPay.toFixed(2);
+        var profit = bid - mat;
+        var crew   = Math.max(0, profit) * 0.15;
+        var pct    = ((profit / bid) * 100).toFixed(1);
+        document.getElementById('pnl-bid').textContent       = fmt$(bid);
+        document.getElementById('pnl-materials').textContent = mat > 0 ? '-' + fmt$(mat) : '$0.00';
+        document.getElementById('pnl-profit').textContent    = fmt$(profit) + ' (' + pct + '%)';
+        document.getElementById('pnl-crew-pay').textContent  = fmt$(crew);
       } else {
-        document.getElementById('pnl-bid').textContent = '—';
-        document.getElementById('pnl-materials').textContent = cost > 0 ? '-$' + cost.toFixed(2) : '—';
-        document.getElementById('pnl-profit').textContent = '—';
-        document.getElementById('pnl-crew').textContent = '—';
+        ['pnl-bid','pnl-materials','pnl-profit','pnl-crew-pay'].forEach(function(id) {
+          document.getElementById(id).textContent = '—';
+        });
       }
     }
 
-    function showError(msg) { var el = document.getElementById('error-box'); el.textContent = msg; el.style.display = 'block'; }
-    function clearError()   { var el = document.getElementById('error-box'); el.textContent = ''; el.style.display = 'none'; }
-
-    async function handleSave(sendSMS) {
-      clearError();
-      var jobName       = document.getElementById('jobSelect').value;
-      var materialsCost = parseFloat(document.getElementById('materialsCost').value);
-      var testMode      = document.getElementById('testMode').checked;
-      if (!jobName) { showError('Please select a job.'); return; }
-      if (isNaN(materialsCost) || materialsCost < 0) { showError('Please enter a valid materials cost (0 is fine).'); return; }
-      var saveBtn = document.getElementById('saveBtn'), smsBtn = document.getElementById('smsBtn');
+    async function closeJob(sendSMS) {
+      var errEl    = document.getElementById('cj-error');
+      errEl.style.display = 'none';
+      var jobName  = document.getElementById('cjJobSelect').value;
+      var mat      = parseFloat(document.getElementById('cjMaterials').value);
+      var testMode = document.getElementById('cjTestMode').checked;
+      if (!jobName) {
+        errEl.textContent = 'Please select a job.';
+        errEl.style.display = 'block'; return;
+      }
+      if (isNaN(mat) || mat < 0) {
+        errEl.textContent = 'Please enter a valid materials cost (0 is fine).';
+        errEl.style.display = 'block'; return;
+      }
+      var saveBtn = document.getElementById('cjSaveBtn');
+      var smsBtn  = document.getElementById('cjSmsBtn');
       saveBtn.disabled = smsBtn.disabled = true;
       if (sendSMS) smsBtn.textContent = 'Sending…'; else saveBtn.textContent = 'Saving…';
       try {
-        var bid = jobsData[jobName] || 0, profit = bid > 0 ? bid - materialsCost : 0, crewPay = Math.max(0, profit) * 0.15;
-        var today = new Date().toISOString().split('T')[0];
-        var resp = await fetch(SUBMIT_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({jobName:jobName, materialsCost:materialsCost, bidAmount:bid, profit:profit, crewPay:crewPay, closeDate:today, sendSMS:sendSMS, testMode:testMode})});
+        var bid    = jobsData[jobName] || 0;
+        var profit = bid > 0 ? bid - mat : 0;
+        var crew   = Math.max(0, profit) * 0.15;
+        var today  = new Date().toISOString().split('T')[0];
+        var resp   = await fetch(SUBMIT_URL, {
+          method: 'POST', cache: 'no-store',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jobName:      jobName,
+            materialsCost: mat,
+            bidAmount:    bid,
+            profit:       profit,
+            crewPay:      crew,
+            closeDate:    today,
+            sendSMS:      sendSMS,
+            testMode:     testMode
+          })
+        });
         if (!resp.ok) throw new Error('server error');
-        document.getElementById('success-title').textContent = sendSMS ? 'Saved + SMS sent!' : 'Job Saved';
-        document.getElementById('success-msg').innerHTML = sendSMS
-          ? (testMode ? 'Job saved. Test SMS sent to Ben.' : 'Job saved. Andrew and Trish will receive a text shortly.')
+        document.getElementById('cj-success-title').textContent =
+          sendSMS ? 'Saved + SMS Sent!' : 'Job Saved';
+        document.getElementById('cj-success-msg').textContent = sendSMS
+          ? (testMode
+              ? 'Job saved. Test SMS sent to Ben.'
+              : 'Job saved. Andrew and Trish will receive a text shortly.')
           : 'Job saved to the sheet. No SMS sent.';
-        document.getElementById('form-screen').style.display = 'none';
-        document.getElementById('success-screen').style.display = 'block';
-        loadJobs();
+        document.getElementById('cj-form-wrap').style.display = 'none';
+        document.getElementById('cj-success-wrap').style.display = 'block';
       } catch(e) {
-        showError('Submission failed — please try again or contact Ben.');
+        errEl.textContent = 'Submission failed — please try again.';
+        errEl.style.display = 'block';
         saveBtn.disabled = smsBtn.disabled = false;
-        saveBtn.textContent = 'Save Job'; smsBtn.textContent = 'Save + Send SMS ✓';
+        saveBtn.textContent = 'Save Job';
+        smsBtn.textContent  = 'Save + Send SMS ✓';
       }
     }
 
-    function resetForm() {
-      document.getElementById('jobSelect').value = '';
-      document.getElementById('materialsCost').value = '';
-      document.getElementById('testMode').checked = false;
-      document.getElementById('expense-indicator').style.display = 'none';
-      document.getElementById('saveBtn').textContent = 'Save Job';
-      document.getElementById('smsBtn').textContent = 'Save + Send SMS ✓';
-      recalc(); clearError();
-      document.getElementById('success-screen').style.display = 'none';
-      document.getElementById('form-screen').style.display = 'block';
+    function resetCloseJob() {
+      document.getElementById('cjMaterials').value = '';
+      document.getElementById('cjTestMode').checked = false;
+      document.getElementById('cj-materials-indicator').style.display = 'none';
+      document.getElementById('cj-error').style.display = 'none';
+      document.getElementById('cjSaveBtn').textContent = 'Save Job';
+      document.getElementById('cjSmsBtn').textContent  = 'Save + Send SMS ✓';
+      document.getElementById('cj-success-wrap').style.display = 'none';
+      document.getElementById('cj-form-wrap').style.display = 'block';
+      loadAndRefreshClose();
     }
 
-    function populateJobPicker() {
-      var c = document.getElementById('job-picker-list');
-      c.innerHTML = ''; selectedExpJob = null;
-      var names = Object.keys(jobsData).sort();
-      if (!names.length) {
-        c.innerHTML = '<p style="color:#9ca3af;font-size:14px;text-align:center;padding:16px 0;">No active jobs found.</p>';
-        return;
-      }
-      names.forEach(function(name) {
-        var card = document.createElement('div');
-        card.className = 'job-pick-card'; card.textContent = name;
-        card.onclick = function() {
-          document.querySelectorAll('.job-pick-card').forEach(function(x) { x.classList.remove('selected'); });
-          card.classList.add('selected'); selectedExpJob = name;
-        };
-        c.appendChild(card);
-      });
-    }
+    // ═══════════════════════════════════════════════════════════
+    //  THIS WEEK TAB
+    // ═══════════════════════════════════════════════════════════
 
-    function handlePhotoSelect(event) {
-      var file = event.target.files[0]; if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        receiptBase64 = e.target.result;
-        var lbl = document.getElementById('photo-btn-label');
-        lbl.textContent = '✓ Photo attached'; lbl.classList.add('has-photo');
-        document.getElementById('photo-preview').innerHTML = '<img src="' + receiptBase64 + '" style="max-width:100%;border-radius:8px;margin-top:10px;">';
-      };
-      reader.readAsDataURL(file);
-    }
+    async function loadAndRenderWeek() {
+      var listEl   = document.getElementById('week-list');
+      var totalsEl = document.getElementById('week-totals');
+      var headerEl = document.getElementById('week-header-text');
+      listEl.innerHTML = '<div class="loading-msg">Loading…</div>';
+      totalsEl.style.display = 'none';
 
-    async function submitExpense() {
-      var errEl = document.getElementById('expense-error-box');
-      errEl.style.display = 'none';
-      if (!selectedExpJob) { errEl.textContent = 'Please select a job first.'; errEl.style.display = 'block'; return; }
-      var amount = parseFloat(document.getElementById('expenseAmount').value);
-      if (isNaN(amount) || amount <= 0) { errEl.textContent = 'Please enter a valid amount greater than $0.'; errEl.style.display = 'block'; return; }
-      var btn = document.getElementById('expenseSubmitBtn');
-      btn.disabled = true; btn.textContent = 'Logging…';
+      var wb = getWeekBounds();
+      headerEl.textContent = fmtDate(wb.sun) + ' – ' + fmtDate(wb.sat);
+
       try {
-        var resp = await fetch(LOG_EXPENSE_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({jobName:selectedExpJob, amount:amount, crewName:crewName||'Unknown', receiptUrl:receiptBase64?'[photo attached]':''})});
-        if (!resp.ok) throw new Error('server error');
-        document.getElementById('expense-success-msg').textContent = 'Logged $' + amount.toFixed(2) + ' to ' + selectedExpJob + ' — nice work.';
-        document.getElementById('expense-form-screen').style.display = 'none';
-        document.getElementById('expense-success-screen').style.display = 'block';
+        var results = await Promise.all([fetchJobs(), fetchExpenses()]);
+        var rows    = results[0];
+        var exps    = results[1];
+        allRows     = rows;
+        allExpenses = exps;
+        if (isAndrew) updateAndrewSnapshot();
+
+        var weekJobs = rows.filter(function(r) {
+          if ((r['Status'] || '').trim().toLowerCase() !== 'closed') return false;
+          var cd = r['Invoice Paid Date'] || r['Close Date'] || r['close_date'] || '';
+          if (!cd) return false;
+          var d = new Date(cd + 'T12:00:00');
+          return d >= wb.sun && d <= wb.sat;
+        });
+
+        if (!weekJobs.length) {
+          listEl.innerHTML = '<div class="empty-msg">No jobs closed this week yet.</div>';
+          return;
+        }
+
+        var totalProfit = 0;
+        var html = '';
+        weekJobs.forEach(function(r, i) {
+          var name    = String(r['Job Name'] || '').trim();
+          var bid     = parseFloat(r['Bid Amount']) || 0;
+          var mat     = parseFloat(r['Jobber Costs'] || r['Materials'] || 0);
+          var profit  = bid > 0 ? bid - mat : 0;
+          totalProfit += profit;
+          var jobExps = exps.filter(function(e) {
+            return String(e['Job Name'] || '').trim().toLowerCase() === name.toLowerCase();
+          });
+          var expHtml = '';
+          if (jobExps.length) {
+            expHtml = '<div class="week-exp-sub">'
+              + jobExps.map(function(e) {
+                  return '<span class="exp-line">$'
+                    + parseFloat(e['Amount'] || 0).toFixed(2)
+                    + ' &middot; ' + esc(e['Crew Name'] || '?')
+                    + ' &middot; ' + esc(e['Date'] || '') + '</span>';
+                }).join('')
+              + '</div>';
+          }
+          html += '<div class="week-row">'
+            + '<div class="week-row-top">'
+            + '<span class="week-job-name">' + (i + 1) + '. ' + esc(name) + '</span>'
+            + '<span class="week-job-profit">$' + profit.toFixed(2) + '</span>'
+            + '</div>' + expHtml + '</div>';
+        });
+
+        listEl.innerHTML = html;
+        var crewTotal = Math.max(0, totalProfit) * 0.15;
+        document.getElementById('week-total-profit').textContent = '$' + totalProfit.toFixed(2);
+        document.getElementById('week-total-crew').textContent   = '$' + crewTotal.toFixed(2);
+        totalsEl.style.display = 'block';
       } catch(e) {
-        errEl.textContent = 'Failed to log — please try again.';
-        errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Log Expense';
+        listEl.innerHTML = '<div class="empty-msg">Could not load data — please try again.</div>';
       }
     }
 
-    function resetExpenseForm() {
-      selectedExpJob = null; receiptBase64 = null;
-      document.getElementById('expenseAmount').value = '';
-      document.getElementById('receiptPhoto').value = '';
-      document.getElementById('photo-preview').innerHTML = '';
-      document.getElementById('expense-error-box').style.display = 'none';
-      var lbl = document.getElementById('photo-btn-label');
-      lbl.textContent = '📷 Tap to attach photo'; lbl.classList.remove('has-photo');
-      var btn = document.getElementById('expenseSubmitBtn');
-      btn.disabled = false; btn.textContent = 'Log Expense';
-      populateJobPicker();
-      document.getElementById('expense-success-screen').style.display = 'none';
-      document.getElementById('expense-form-screen').style.display = 'block';
+    // ═══════════════════════════════════════════════════════════
+    //  EXPENSES TAB
+    // ═══════════════════════════════════════════════════════════
+
+    async function loadAndRenderExpenses() {
+      var listEl = document.getElementById('expenses-list');
+      listEl.innerHTML = '<div class="loading-msg">Loading…</div>';
+      try {
+        var exps = await fetchExpenses();
+        allExpenses = exps;
+        if (!exps.length) {
+          listEl.innerHTML = '<div class="empty-msg">No expenses logged yet.</div>';
+          return;
+        }
+        var sorted = exps.slice().sort(function(a, b) {
+          return (b['Date'] || '').localeCompare(a['Date'] || '');
+        });
+        listEl.innerHTML = sorted.map(function(e) {
+          var amt  = parseFloat(e['Amount'] || 0).toFixed(2);
+          var job  = esc(e['Job Name']  || '—');
+          var crew = esc(e['Crew Name'] || '—');
+          var date = esc(e['Date']      || '');
+          return '<div class="exp-item">'
+            + '<div class="exp-item-top">'
+            + '<span class="exp-item-job">' + job + '</span>'
+            + '<span class="exp-item-amt">$' + amt + '</span>'
+            + '</div>'
+            + '<div class="exp-item-sub">' + crew + ' &middot; ' + date + '</div>'
+            + '</div>';
+        }).join('');
+      } catch(e) {
+        listEl.innerHTML = '<div class="empty-msg">Could not load expenses — please try again.</div>';
+      }
     }
 
-    function getWeekBounds() {
-      var now = new Date(), day = now.getDay(), diff = (day === 0) ? -6 : 1 - day;
-      var mon = new Date(now); mon.setDate(now.getDate() + diff); mon.setHours(0,0,0,0);
-      var sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
-      return {mon:mon, sun:sun};
-    }
+    // ═══════════════════════════════════════════════════════════
+    //  ANDREW SNAPSHOT
+    // ═══════════════════════════════════════════════════════════
 
-    function renderThisWeek() {
-      var listEl = document.getElementById('week-list'), totalsEl = document.getElementById('week-totals'), headerEl = document.getElementById('week-header');
-      var wb = getWeekBounds(), mon = wb.mon, sun = wb.sun;
-      var fmt = function(d) { return d.toLocaleDateString('en-US', {month:'short', day:'numeric'}); };
-      headerEl.textContent = 'This Week (' + fmt(mon) + ' – ' + fmt(sun) + ')';
+    function updateAndrewSnapshot() {
+      var wb       = getWeekBounds();
       var weekJobs = allRows.filter(function(r) {
-        var st = (r['Status'] || '').trim().toLowerCase();
-        if (st !== 'closed') return false;
+        if ((r['Status'] || '').trim().toLowerCase() !== 'closed') return false;
         var cd = r['Invoice Paid Date'] || r['Close Date'] || r['close_date'] || '';
         if (!cd) return false;
         var d = new Date(cd + 'T12:00:00');
-        return d >= mon && d <= sun;
-      });
-      listEl.innerHTML = ''; totalsEl.style.display = 'none';
-      if (!weekJobs.length) { listEl.innerHTML = '<div class="week-empty">No jobs closed this week yet.</div>'; return; }
-      var totalProfit = 0;
-      weekJobs.forEach(function(r, i) {
-        var name = String(r['Job Name'] || '').trim(), bid = parseFloat(r['Bid Amount']) || 0;
-        var materials = parseFloat(r['Jobber Costs'] || r['Materials'] || 0), profit = bid > 0 ? bid - materials : 0;
-        totalProfit += profit;
-        var row = document.createElement('div'); row.className = 'week-job-row';
-        var expHtml = '';
-        if (isTrish || isAndrew) {
-          var jobExps = allExpenses.filter(function(e) { return String(e['Job Name'] || '').trim().toLowerCase() === name.toLowerCase(); });
-          if (jobExps.length > 0) expHtml = '<div class="job-expenses-sub">' + jobExps.map(function(e) { return '<span class="exp-row">$' + parseFloat(e['Amount']||0).toFixed(2) + ' · ' + esc(e['Crew Name']||'?') + ' · ' + esc(e['Date']||'') + '</span>'; }).join('') + '</div>';
-        }
-        row.innerHTML = '<div class="week-job-row-header"><span class="week-job-name">' + (i+1) + '. ' + esc(name) + '</span><span class="week-job-profit">$' + profit.toFixed(2) + '</span></div>' + expHtml;
-        listEl.appendChild(row);
-      });
-      var crew = Math.max(0, totalProfit) * 0.15;
-      document.getElementById('week-total-profit').textContent = '$' + totalProfit.toFixed(2);
-      document.getElementById('week-total-crew').textContent = '$' + crew.toFixed(2);
-      totalsEl.style.display = 'block';
-    }
-
-    async function renderExpensesView() {
-      var listEl = document.getElementById('expenses-view-list');
-      listEl.innerHTML = '<div class="week-empty">Loading…</div>';
-      await loadExpenses();
-      if (!allExpenses.length) { listEl.innerHTML = '<div class="week-empty">No expenses logged yet.</div>'; return; }
-      var sorted = allExpenses.slice().sort(function(a,b) { return (b['Date']||'').localeCompare(a['Date']||''); });
-      listEl.innerHTML = sorted.map(function(e) {
-        var amt = parseFloat(e['Amount']||0).toFixed(2), job = esc(e['Job Name']||'—'), crew = esc(e['Crew Name']||'—'), date = esc(e['Date']||'');
-        return '<div class="exp-list-row"><div style="display:flex;justify-content:space-between;"><span style="font-weight:600;color:#111827;font-size:15px;">'+job+'</span><span style="font-weight:700;color:#1b4332;font-size:15px;">$'+amt+'</span></div><div style="font-size:12px;color:#6b7280;margin-top:3px;">'+crew+' · '+date+'</div></div>';
-      }).join('');
-    }
-
-    function updateAndrewSnapshot() {
-      var wb = getWeekBounds(), mon = wb.mon, sun = wb.sun;
-      var weekJobs = allRows.filter(function(r) {
-        var st = (r['Status']||'').trim().toLowerCase();
-        if (st !== 'closed') return false;
-        var cd = r['Invoice Paid Date'] || r['Close Date'] || '';
-        if (!cd) return false;
-        var d = new Date(cd + 'T12:00:00');
-        return d >= mon && d <= sun;
+        return d >= wb.sun && d <= wb.sat;
       });
       var totalProfit = 0;
       weekJobs.forEach(function(r) {
-        var bid = parseFloat(r['Bid Amount'])||0, mat = parseFloat(r['Jobber Costs']||r['Materials']||0);
+        var bid = parseFloat(r['Bid Amount']) || 0;
+        var mat = parseFloat(r['Jobber Costs'] || r['Materials'] || 0);
         totalProfit += (bid > 0 ? bid - mat : 0);
       });
       var crewPay = Math.max(0, totalProfit) * 0.15;
@@ -696,25 +1017,8 @@
       document.getElementById('snap-crew').textContent   = '$' + crewPay.toFixed(0);
     }
 
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
-      document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
-      var pane = document.getElementById('tab-' + tab), btn = document.getElementById('nav-' + tab);
-      if (pane) pane.classList.add('active'); if (btn) btn.classList.add('active');
-      if (tab === 'week')          renderThisWeek();
-      if (tab === 'expenses-view') renderExpensesView();
-      if (tab === 'close')         loadJobs();
-      if (tab === 'log-expense')   loadJobs();
-    }
-
-    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() { navigator.serviceWorker.register('sw.js', {scope: './'}).catch(function(){}); });
-    }
-
-    initUI();
-    if (hasRole) loadJobs();
+    // ─── Boot ─────────────────────────────────────────────────────────────────
+    init();
   </script>
 </body>
 </html>
