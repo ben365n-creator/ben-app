@@ -29,6 +29,38 @@
     header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.3px; }
     header p  { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; }
 
+    /* Andrew Snapshot */
+    .snapshot-wrap {
+      background: #1b4332;
+      padding: 0 16px 16px;
+    }
+    .snapshot-grid {
+      display: flex;
+      gap: 8px;
+    }
+    .snapshot-card {
+      flex: 1;
+      background: rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .snap-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+    .snap-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    /* Nav */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -42,7 +74,7 @@
       flex: 1;
       border: none;
       background: transparent;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #9ca3af;
       cursor: pointer;
@@ -81,7 +113,8 @@
       margin-bottom: 7px;
     }
     input[type="text"],
-    input[type="number"] {
+    input[type="number"],
+    select {
       width: 100%;
       padding: 14px 13px;
       font-size: 17px;
@@ -93,7 +126,26 @@
       -webkit-appearance: none;
       transition: border-color 0.15s;
     }
-    input:focus { border-color: #1b4332; }
+    input:focus, select:focus { border-color: #1b4332; }
+    select { cursor: pointer; }
+
+    .expense-indicator {
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .expense-indicator.green {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+    .expense-indicator.yellow {
+      background: #fefce8;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
 
     .pnl-card {
       background: #f0fdf4;
@@ -186,7 +238,7 @@
       display: none;
     }
 
-    #success-screen { text-align: center; }
+    .success-screen { text-align: center; }
     .check-wrap {
       width: 80px; height: 80px;
       background: #1b4332;
@@ -195,8 +247,8 @@
       margin: 0 auto 20px;
     }
     .check-wrap svg { width: 44px; height: 44px; }
-    #success-screen h2 { font-size: 24px; font-weight: 700; color: #1b4332; margin-bottom: 8px; }
-    #success-screen p  { font-size: 15px; color: #6b7280; line-height: 1.6; margin-bottom: 26px; }
+    .success-screen h2 { font-size: 24px; font-weight: 700; color: #1b4332; margin-bottom: 8px; }
+    .success-screen p  { font-size: 15px; color: #6b7280; line-height: 1.6; margin-bottom: 26px; }
     .btn-reset {
       background: transparent;
       border: 2px solid #1b4332;
@@ -218,16 +270,28 @@
       margin-bottom: 12px;
     }
     .week-job-row {
+      padding: 12px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .week-job-row:last-child { border-bottom: none; }
+    .week-job-row-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #f3f4f6;
       font-size: 15px;
     }
-    .week-job-row:last-child { border-bottom: none; }
     .week-job-name { font-weight: 600; color: #111827; }
     .week-job-profit { font-weight: 700; color: #1b4332; }
+    .job-expenses-sub {
+      margin-top: 6px;
+      padding-left: 12px;
+    }
+    .exp-row {
+      display: block;
+      font-size: 12px;
+      color: #6b7280;
+      padding: 2px 0;
+    }
     .week-totals {
       margin-top: 14px;
       padding-top: 14px;
@@ -243,82 +307,145 @@
     .week-total-label { color: #374151; }
     .week-total-val { color: #1b4332; }
     .week-empty { text-align: center; color: #9ca3af; font-size: 15px; padding: 30px 0; }
+
+    .job-picker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .job-pick-card {
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .job-pick-card:active { background: #f0fdf4; }
+    .job-pick-card.selected {
+      border-color: #1b4332;
+      background: #f0fdf4;
+      color: #1b4332;
+    }
+
+    .photo-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
+      border: 2px dashed #d1d5db;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .photo-btn.has-photo {
+      border-color: #1b4332;
+      color: #1b4332;
+      background: #f0fdf4;
+      border-style: solid;
+    }
+    .photo-preview img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .exp-list-row {
+      padding: 12px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .exp-list-row:last-child { border-bottom: none; }
+
+    .btn-full {
+      width: 100%;
+      background: #1b4332;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-appearance: none;
+      transition: background 0.15s;
+      margin-top: 4px;
+    }
+    .btn-full:active { background: #0f2d1a; }
+    .btn-full:disabled { opacity: 0.4; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
   <header>
     <h1>EA Jobs</h1>
-    <p>Exterior Arts Renovations</p>
+    <p id="header-sub">Exterior Arts Renovations</p>
   </header>
 
-  <nav class="bottom-nav">
-    <button class="nav-btn active" id="nav-close" onclick="switchTab('close')">Close Job</button>
-    <button class="nav-btn" id="nav-week" onclick="switchTab('week')">This Week</button>
-  </nav>
+  <div id="andrew-snapshot" style="display:none;" class="snapshot-wrap">
+    <div class="snapshot-grid">
+      <div class="snapshot-card">
+        <div class="snap-val" id="snap-jobs">—</div>
+        <div class="snap-label">Jobs This Week</div>
+      </div>
+      <div class="snapshot-card">
+        <div class="snap-val" id="snap-profit">—</div>
+        <div class="snap-label">Total Profit</div>
+      </div>
+      <div class="snapshot-card">
+        <div class="snap-val" id="snap-crew">—</div>
+        <div class="snap-label">Crew Pay</div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Close Job Tab -->
-  <div class="tab-pane active" id="tab-close">
+  <nav class="bottom-nav" id="bottom-nav"></nav>
+
+  <div class="tab-pane" id="tab-close">
     <main>
       <div id="form-screen">
         <div class="card">
           <div class="error-box" id="error-box"></div>
-
           <div class="field">
-            <label for="jobName">Job Name</label>
-            <input type="text" id="jobName" placeholder="Enter job name…" autocomplete="off">
+            <label for="jobSelect">Job Name</label>
+            <select id="jobSelect" onchange="handleJobSelect()">
+              <option value="">Select a job…</option>
+            </select>
           </div>
-
+          <div class="expense-indicator" id="expense-indicator" style="display:none;"></div>
           <div class="field">
             <label for="materialsCost">Total Materials Cost ($)</label>
-            <input type="number" id="materialsCost" min="0" step="0.01" placeholder="0.00">
+            <input type="number" id="materialsCost" min="0" step="0.01" placeholder="0.00" oninput="recalc()">
           </div>
-
           <div class="pnl-card">
-            <div class="pnl-row">
-              <span class="pnl-label">Job</span>
-              <span class="pnl-value" id="pnl-job">—</span>
-            </div>
-            <div class="pnl-row">
-              <span class="pnl-label">Bid</span>
-              <span class="pnl-value" id="pnl-bid">—</span>
-            </div>
-            <div class="pnl-row">
-              <span class="pnl-label">Materials</span>
-              <span class="pnl-value" id="pnl-materials">—</span>
-            </div>
+            <div class="pnl-row"><span class="pnl-label">Job</span><span class="pnl-value" id="pnl-job">—</span></div>
+            <div class="pnl-row"><span class="pnl-label">Bid</span><span class="pnl-value" id="pnl-bid">—</span></div>
+            <div class="pnl-row"><span class="pnl-label">Materials</span><span class="pnl-value" id="pnl-materials">—</span></div>
             <div class="pnl-divider"></div>
-            <div class="pnl-row pnl-profit">
-              <span class="pnl-label">Profit</span>
-              <span class="pnl-value" id="pnl-profit">—</span>
-            </div>
-            <div class="pnl-row">
-              <span class="pnl-label">Crew Leader Pay</span>
-              <span class="pnl-value pnl-crew-val" id="pnl-crew">—</span>
-            </div>
+            <div class="pnl-row pnl-profit"><span class="pnl-label">Profit</span><span class="pnl-value" id="pnl-profit">—</span></div>
+            <div class="pnl-row"><span class="pnl-label">Crew Leader Pay</span><span class="pnl-value pnl-crew-val" id="pnl-crew">—</span></div>
           </div>
-
           <div class="btn-row">
             <button id="saveBtn" class="btn-outline" onclick="handleSave(false)">Save Job</button>
             <button id="smsBtn" class="btn-solid" onclick="handleSave(true)">Save + Send SMS ✓</button>
           </div>
-
           <div class="test-mode-row">
-            <label>
-              <input type="checkbox" id="testMode">
-              Test Mode — SMS goes to Ben only
-            </label>
+            <label><input type="checkbox" id="testMode"> Test Mode — SMS goes to Ben only</label>
           </div>
         </div>
       </div>
-
-      <div id="success-screen" class="card" style="display:none;">
-        <div class="check-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white"
-               stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </div>
+      <div id="success-screen" class="card success-screen" style="display:none;">
+        <div class="check-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
         <h2 id="success-title">Done!</h2>
         <p id="success-msg">Job saved successfully.</p>
         <button class="btn-reset" onclick="resetForm()">Close Another Job</button>
@@ -326,216 +453,350 @@
     </main>
   </div>
 
-  <!-- This Week Tab -->
   <div class="tab-pane" id="tab-week">
     <main>
       <div class="card">
         <div class="week-header" id="week-header">This Week</div>
         <div id="week-list"></div>
         <div class="week-totals" id="week-totals" style="display:none;">
-          <div class="week-total-row">
-            <span class="week-total-label">Total Profit</span>
-            <span class="week-total-val" id="week-total-profit">$0.00</span>
-          </div>
-          <div class="week-total-row">
-            <span class="week-total-label">Crew Leader Pay</span>
-            <span class="week-total-val" id="week-total-crew">$0.00</span>
-          </div>
+          <div class="week-total-row"><span class="week-total-label">Total Profit</span><span class="week-total-val" id="week-total-profit">$0.00</span></div>
+          <div class="week-total-row"><span class="week-total-label">Crew Leader Pay</span><span class="week-total-val" id="week-total-crew">$0.00</span></div>
         </div>
       </div>
     </main>
   </div>
 
-  <script>
-    const GET_JOBS_URL = 'https://hook.us2.make.com/zvg1lf2a8on7fqgknnj3w9xfe19wfjtg';
-    const SUBMIT_URL   = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
+  <div class="tab-pane" id="tab-log-expense">
+    <main>
+      <div id="expense-form-screen">
+        <div class="card">
+          <div class="error-box" id="expense-error-box"></div>
+          <div class="field">
+            <label>Select Job</label>
+            <div id="job-picker-list" class="job-picker-list"><p style="color:#9ca3af;font-size:14px;text-align:center;padding:16px 0;">Loading jobs…</p></div>
+          </div>
+          <div class="field">
+            <label for="expenseAmount">Amount ($)</label>
+            <input type="number" id="expenseAmount" min="0.01" step="0.01" placeholder="0.00">
+          </div>
+          <div class="field">
+            <label>Receipt Photo <span style="font-weight:400;text-transform:none;font-size:10px;letter-spacing:0;">(optional)</span></label>
+            <label class="photo-btn" id="photo-btn-label" for="receiptPhoto">📷 Tap to attach photo</label>
+            <input type="file" id="receiptPhoto" accept="image/*" style="display:none;" onchange="handlePhotoSelect(event)">
+            <div class="photo-preview" id="photo-preview"></div>
+          </div>
+          <button id="expenseSubmitBtn" class="btn-full" onclick="submitExpense()">Log Expense</button>
+        </div>
+      </div>
+      <div id="expense-success-screen" class="card success-screen" style="display:none;">
+        <div class="check-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <h2>Nice work!</h2>
+        <p id="expense-success-msg"></p>
+        <button class="btn-reset" onclick="resetExpenseForm()">Log Another</button>
+      </div>
+    </main>
+  </div>
 
-    let jobsData = {};
-    let allRows  = [];
+  <div class="tab-pane" id="tab-expenses-view">
+    <main>
+      <div class="card">
+        <div class="week-header">All Expenses</div>
+        <div id="expenses-view-list"><div class="week-empty">Loading…</div></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const urlParams  = new URLSearchParams(window.location.search);
+    const role       = (urlParams.get('role') || '').toLowerCase();
+    const crewName   = urlParams.get('name') || '';
+    const isCrew     = role === 'crew';
+    const isTrish    = role === 'trish';
+    const isAndrew   = role === 'andrew';
+    const isFullView = !isCrew;
+
+    const GET_JOBS_URL     = 'https://hook.us2.make.com/zvg1lf2a8on7fqgknnj3w9xfe19wfjtg';
+    const SUBMIT_URL       = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
+    const LOG_EXPENSE_URL  = 'https://hook.us2.make.com/d34v6x6fggpxozjyhf8aojhondp824hx';
+    const GET_EXPENSES_URL = 'https://hook.us2.make.com/fnbs3jc71w8m3l86wn0ns1t085atdosj';
+
+    let jobsData = {}, allRows = [], allExpenses = [];
+    let selectedExpJob = null, receiptBase64 = null;
+
+    function initUI() {
+      if (isCrew && crewName) document.getElementById('header-sub').textContent = 'Hey ' + crewName + ' — log your materials';
+      if (isAndrew) document.getElementById('andrew-snapshot').style.display = 'block';
+      buildNav();
+      switchTab(isCrew ? 'log-expense' : 'close');
+    }
+
+    function buildNav() {
+      const nav = document.getElementById('bottom-nav');
+      nav.innerHTML = '';
+      const tabs = [];
+      if (isFullView) { tabs.push({id:'close',label:'Close Job'}); tabs.push({id:'week',label:'This Week'}); }
+      tabs.push({id:'log-expense',label:'Log Expense'});
+      if (isFullView) tabs.push({id:'expenses-view',label:'Expenses'});
+      tabs.forEach(t => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn'; btn.id = 'nav-' + t.id;
+        btn.textContent = t.label; btn.onclick = () => switchTab(t.id);
+        nav.appendChild(btn);
+      });
+    }
 
     async function loadJobs() {
       try {
         const resp = await fetch(GET_JOBS_URL);
         if (!resp.ok) return;
         const rows = await resp.json();
-        allRows = rows;
-        jobsData = {};
-        rows.forEach(r => {
-          const name = String(r['Job Name'] || '').trim();
-          const bid  = parseFloat(r['Bid Amount']) || 0;
-          if (name) jobsData[name] = bid;
-        });
-      } catch(e) { /* silent */ }
+        allRows = rows; jobsData = {};
+        rows.forEach(r => { const n = String(r['Job Name']||'').trim(); const b = parseFloat(r['Bid Amount'])||0; if(n) jobsData[n]=b; });
+        populateJobSelect(); populateJobPicker();
+        if (isAndrew) updateAndrewSnapshot();
+      } catch(e) {}
+    }
+
+    async function loadExpenses() {
+      try {
+        const resp = await fetch(GET_EXPENSES_URL);
+        allExpenses = resp.ok ? await resp.json() : [];
+      } catch(e) { allExpenses = []; }
+    }
+
+    function populateJobSelect() {
+      const sel = document.getElementById('jobSelect');
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">Select a job…</option>';
+      Object.keys(jobsData).sort().forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; sel.appendChild(o); });
+      if (cur && jobsData[cur]) sel.value = cur;
+    }
+
+    async function handleJobSelect() {
+      recalc();
+      const jobName = document.getElementById('jobSelect').value;
+      const ind = document.getElementById('expense-indicator');
+      if (!jobName) { ind.style.display = 'none'; return; }
+      try {
+        const resp = await fetch(GET_EXPENSES_URL);
+        if (!resp.ok) { ind.style.display='none'; return; }
+        const exps = await resp.json();
+        const jobExps = exps.filter(e => String(e['Job Name']||'').trim().toLowerCase() === jobName.toLowerCase());
+        const total = jobExps.reduce((s,e) => s+(parseFloat(e['Amount'])||0), 0);
+        if (jobExps.length > 0) {
+          document.getElementById('materialsCost').value = total.toFixed(2);
+          ind.className = 'expense-indicator green';
+          ind.textContent = '✓ Auto-filled from '+jobExps.length+' logged expense'+(jobExps.length>1?'s':'')+' ($'+total.toFixed(2)+')';
+        } else {
+          document.getElementById('materialsCost').value = '';
+          ind.className = 'expense-indicator yellow';
+          ind.textContent = '⚠ No expenses logged — enter materials cost manually';
+        }
+        ind.style.display = 'block'; recalc();
+      } catch(e) { ind.style.display='none'; }
     }
 
     function recalc() {
-      const name = document.getElementById('jobName').value.trim();
-      const cost = parseFloat(document.getElementById('materialsCost').value) || 0;
-      document.getElementById('pnl-job').textContent = name || '—';
+      const name = document.getElementById('jobSelect').value;
+      const cost = parseFloat(document.getElementById('materialsCost').value)||0;
+      document.getElementById('pnl-job').textContent = name||'—';
       const bid = jobsData[name];
       if (bid !== undefined && bid > 0) {
-        const profit  = bid - cost;
-        const margin  = ((profit / bid) * 100).toFixed(1);
-        const crewPay = Math.max(0, profit) * 0.15;
-        document.getElementById('pnl-bid').textContent      = '$' + bid.toFixed(2);
-        document.getElementById('pnl-materials').textContent = cost > 0 ? '-$' + cost.toFixed(2) : '$0.00';
-        document.getElementById('pnl-profit').textContent   = '$' + profit.toFixed(2) + ' (' + margin + '%)';
-        document.getElementById('pnl-crew').textContent     = '$' + crewPay.toFixed(2);
+        const profit = bid-cost, margin = ((profit/bid)*100).toFixed(1), crewPay = Math.max(0,profit)*0.15;
+        document.getElementById('pnl-bid').textContent = '$'+bid.toFixed(2);
+        document.getElementById('pnl-materials').textContent = cost>0?'-$'+cost.toFixed(2):'$0.00';
+        document.getElementById('pnl-profit').textContent = '$'+profit.toFixed(2)+' ('+margin+'%)';
+        document.getElementById('pnl-crew').textContent = '$'+crewPay.toFixed(2);
       } else {
-        document.getElementById('pnl-bid').textContent      = '—';
-        document.getElementById('pnl-materials').textContent = cost > 0 ? '-$' + cost.toFixed(2) : '—';
-        document.getElementById('pnl-profit').textContent   = '—';
-        document.getElementById('pnl-crew').textContent     = '—';
+        document.getElementById('pnl-bid').textContent = '—';
+        document.getElementById('pnl-materials').textContent = cost>0?'-$'+cost.toFixed(2):'—';
+        document.getElementById('pnl-profit').textContent = '—';
+        document.getElementById('pnl-crew').textContent = '—';
       }
     }
 
-    document.getElementById('jobName').addEventListener('input', recalc);
-    document.getElementById('materialsCost').addEventListener('input', recalc);
-
-    function showError(msg) {
-      const el = document.getElementById('error-box');
-      el.textContent = msg; el.style.display = 'block';
-    }
-    function clearError() {
-      const el = document.getElementById('error-box');
-      el.textContent = ''; el.style.display = 'none';
-    }
+    function showError(msg) { const el=document.getElementById('error-box'); el.textContent=msg; el.style.display='block'; }
+    function clearError() { const el=document.getElementById('error-box'); el.textContent=''; el.style.display='none'; }
 
     async function handleSave(sendSMS) {
       clearError();
-      const jobName       = document.getElementById('jobName').value.trim();
+      const jobName = document.getElementById('jobSelect').value;
       const materialsCost = parseFloat(document.getElementById('materialsCost').value);
-      const testMode      = document.getElementById('testMode').checked;
-
-      if (!jobName) { showError('Please enter a job name.'); return; }
-      if (isNaN(materialsCost) || materialsCost < 0) {
-        showError('Please enter a valid materials cost (0 is fine).');
-        return;
-      }
-
-      const saveBtn = document.getElementById('saveBtn');
-      const smsBtn  = document.getElementById('smsBtn');
-      saveBtn.disabled = smsBtn.disabled = true;
-      if (sendSMS) smsBtn.textContent = 'Sending…';
-      else saveBtn.textContent = 'Saving…';
-
+      const testMode = document.getElementById('testMode').checked;
+      if (!jobName) { showError('Please select a job.'); return; }
+      if (isNaN(materialsCost)||materialsCost<0) { showError('Please enter a valid materials cost (0 is fine).'); return; }
+      const saveBtn=document.getElementById('saveBtn'), smsBtn=document.getElementById('smsBtn');
+      saveBtn.disabled=smsBtn.disabled=true;
+      if (sendSMS) smsBtn.textContent='Sending…'; else saveBtn.textContent='Saving…';
       try {
-        const today   = new Date().toISOString().split('T')[0];
-        const bid     = jobsData[jobName] || 0;
-        const profit  = bid > 0 ? bid - materialsCost : 0;
-        const crewPay = Math.max(0, profit) * 0.15;
-
-        const resp = await fetch(SUBMIT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobName, materialsCost, bidAmount: bid, profit, crewPay, closeDate: today, sendSMS, testMode })
-        });
-        if (!resp.ok) throw new Error('Server error ' + resp.status);
-
-        document.getElementById('success-title').textContent =
-          sendSMS ? 'Saved + SMS sent!' : 'Job Saved';
-        document.getElementById('success-msg').innerHTML = sendSMS
-          ? (testMode ? 'Job saved. Test SMS sent to Ben.' : 'Job saved. Andrew and Trish will receive a text shortly.')
-          : 'Job saved to the sheet. No SMS sent.';
-
-        document.getElementById('form-screen').style.display  = 'none';
-        document.getElementById('success-screen').style.display = 'block';
+        const bid=jobsData[jobName]||0, profit=bid>0?bid-materialsCost:0, crewPay=Math.max(0,profit)*0.15;
+        const today=new Date().toISOString().split('T')[0];
+        const resp = await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jobName,materialsCost,bidAmount:bid,profit,crewPay,closeDate:today,sendSMS,testMode})});
+        if (!resp.ok) throw new Error('Server error');
+        document.getElementById('success-title').textContent = sendSMS?'Saved + SMS sent!':'Job Saved';
+        document.getElementById('success-msg').innerHTML = sendSMS?(testMode?'Job saved. Test SMS sent to Ben.':'Job saved. Andrew and Trish will receive a text shortly.'):'Job saved to the sheet. No SMS sent.';
+        document.getElementById('form-screen').style.display='none';
+        document.getElementById('success-screen').style.display='block';
         loadJobs();
       } catch(e) {
         showError('Submission failed — please try again or contact Ben.');
-        saveBtn.disabled = smsBtn.disabled = false;
-        saveBtn.textContent = 'Save Job';
-        smsBtn.textContent  = 'Save + Send SMS ✓';
+        saveBtn.disabled=smsBtn.disabled=false;
+        saveBtn.textContent='Save Job'; smsBtn.textContent='Save + Send SMS ✓';
       }
     }
 
     function resetForm() {
-      document.getElementById('jobName').value = '';
-      document.getElementById('materialsCost').value = '';
-      document.getElementById('testMode').checked = false;
-      document.getElementById('saveBtn').textContent = 'Save Job';
-      document.getElementById('smsBtn').textContent  = 'Save + Send SMS ✓';
+      document.getElementById('jobSelect').value='';
+      document.getElementById('materialsCost').value='';
+      document.getElementById('testMode').checked=false;
+      document.getElementById('expense-indicator').style.display='none';
+      document.getElementById('saveBtn').textContent='Save Job';
+      document.getElementById('smsBtn').textContent='Save + Send SMS ✓';
       recalc(); clearError();
-      document.getElementById('success-screen').style.display = 'none';
-      document.getElementById('form-screen').style.display    = 'block';
+      document.getElementById('success-screen').style.display='none';
+      document.getElementById('form-screen').style.display='block';
     }
 
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('tab-' + tab).classList.add('active');
-      document.getElementById('nav-' + tab).classList.add('active');
-      if (tab === 'week') renderThisWeek();
+    function populateJobPicker() {
+      const c = document.getElementById('job-picker-list');
+      c.innerHTML = ''; selectedExpJob = null;
+      const names = Object.keys(jobsData).sort();
+      if (!names.length) { c.innerHTML='<p style="color:#9ca3af;font-size:14px;text-align:center;padding:16px 0;">No active jobs found.</p>'; return; }
+      names.forEach(name => {
+        const card = document.createElement('div');
+        card.className = 'job-pick-card'; card.textContent = name;
+        card.onclick = () => { document.querySelectorAll('.job-pick-card').forEach(x=>x.classList.remove('selected')); card.classList.add('selected'); selectedExpJob=name; };
+        c.appendChild(card);
+      });
+    }
+
+    function handlePhotoSelect(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        receiptBase64 = e.target.result;
+        const lbl = document.getElementById('photo-btn-label');
+        lbl.textContent = '✓ Photo attached'; lbl.classList.add('has-photo');
+        document.getElementById('photo-preview').innerHTML = '<img src="'+receiptBase64+'" style="max-width:100%;border-radius:8px;margin-top:10px;">';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function submitExpense() {
+      const errEl = document.getElementById('expense-error-box');
+      errEl.style.display = 'none';
+      if (!selectedExpJob) { errEl.textContent='Please select a job first.'; errEl.style.display='block'; return; }
+      const amount = parseFloat(document.getElementById('expenseAmount').value);
+      if (isNaN(amount)||amount<=0) { errEl.textContent='Please enter a valid amount greater than $0.'; errEl.style.display='block'; return; }
+      const btn = document.getElementById('expenseSubmitBtn');
+      btn.disabled=true; btn.textContent='Logging…';
+      try {
+        const resp = await fetch(LOG_EXPENSE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jobName:selectedExpJob,amount,crewName:crewName||'Unknown',receiptUrl:receiptBase64?'[photo attached]':''})});
+        if (!resp.ok) throw new Error('Server error');
+        document.getElementById('expense-success-msg').textContent = 'Logged $'+amount.toFixed(2)+' to '+selectedExpJob+' — nice work.';
+        document.getElementById('expense-form-screen').style.display='none';
+        document.getElementById('expense-success-screen').style.display='block';
+      } catch(e) { errEl.textContent='Failed to log — please try again.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Log Expense'; }
+    }
+
+    function resetExpenseForm() {
+      selectedExpJob=null; receiptBase64=null;
+      document.getElementById('expenseAmount').value='';
+      document.getElementById('receiptPhoto').value='';
+      document.getElementById('photo-preview').innerHTML='';
+      document.getElementById('expense-error-box').style.display='none';
+      const lbl=document.getElementById('photo-btn-label');
+      lbl.textContent='📷 Tap to attach photo'; lbl.classList.remove('has-photo');
+      const btn=document.getElementById('expenseSubmitBtn');
+      btn.disabled=false; btn.textContent='Log Expense';
+      populateJobPicker();
+      document.getElementById('expense-success-screen').style.display='none';
+      document.getElementById('expense-form-screen').style.display='block';
     }
 
     function getWeekBounds() {
-      const now = new Date();
-      const day = now.getDay();
-      const diffToMon = (day === 0) ? -6 : 1 - day;
-      const mon = new Date(now);
-      mon.setDate(now.getDate() + diffToMon);
-      mon.setHours(0, 0, 0, 0);
-      const sun = new Date(mon);
-      sun.setDate(mon.getDate() + 6);
-      sun.setHours(23, 59, 59, 999);
-      return { mon, sun };
+      const now=new Date(), day=now.getDay(), diff=(day===0)?-6:1-day;
+      const mon=new Date(now); mon.setDate(now.getDate()+diff); mon.setHours(0,0,0,0);
+      const sun=new Date(mon); sun.setDate(mon.getDate()+6); sun.setHours(23,59,59,999);
+      return {mon,sun};
     }
 
     function renderThisWeek() {
-      const listEl   = document.getElementById('week-list');
-      const totalsEl = document.getElementById('week-totals');
-      const headerEl = document.getElementById('week-header');
-      const { mon, sun } = getWeekBounds();
-      const fmt = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      headerEl.textContent = 'This Week (' + fmt(mon) + ' – ' + fmt(sun) + ')';
-
-      const weekJobs = allRows.filter(r => {
-        if ((r['Status'] || '').trim().toLowerCase() !== 'paid') return false;
-        const cd = r['Invoice Paid Date'] || r['Close Date'] || r['close_date'] || '';
-        if (!cd) return false;
-        const d = new Date(cd + 'T12:00:00');
-        return d >= mon && d <= sun;
+      const listEl=document.getElementById('week-list'), totalsEl=document.getElementById('week-totals'), headerEl=document.getElementById('week-header');
+      const {mon,sun}=getWeekBounds();
+      const fmt=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      headerEl.textContent='This Week ('+fmt(mon)+' – '+fmt(sun)+')';
+      const weekJobs=allRows.filter(r=>{
+        if ((r['Status']||'').trim().toLowerCase()!=='paid') return false;
+        const cd=r['Invoice Paid Date']||r['Close Date']||r['close_date']||''; if(!cd) return false;
+        const d=new Date(cd+'T12:00:00'); return d>=mon&&d<=sun;
       });
-
-      listEl.innerHTML = '';
-      totalsEl.style.display = 'none';
-
-      if (weekJobs.length === 0) {
-        listEl.innerHTML = '<div class="week-empty">No jobs closed this week yet.</div>';
-        return;
-      }
-
-      let totalProfit = 0;
-      weekJobs.forEach((r, i) => {
-        const name      = String(r['Job Name'] || '').trim();
-        const bid       = parseFloat(r['Bid Amount']) || 0;
-        const materials = parseFloat(r['Jobber Costs'] || r['Materials'] || 0);
-        const profit    = bid > 0 ? bid - materials : 0;
-        totalProfit += profit;
-        const row = document.createElement('div');
-        row.className = 'week-job-row';
-        row.innerHTML =
-          '<span class="week-job-name">' + (i + 1) + '. ' + esc(name) + '</span>' +
-          '<span class="week-job-profit">$' + profit.toFixed(2) + '</span>';
+      listEl.innerHTML=''; totalsEl.style.display='none';
+      if (!weekJobs.length) { listEl.innerHTML='<div class="week-empty">No jobs closed this week yet.</div>'; return; }
+      let totalProfit=0;
+      weekJobs.forEach((r,i)=>{
+        const name=String(r['Job Name']||'').trim(), bid=parseFloat(r['Bid Amount'])||0;
+        const materials=parseFloat(r['Jobber Costs']||r['Materials']||0), profit=bid>0?bid-materials:0;
+        totalProfit+=profit;
+        const row=document.createElement('div'); row.className='week-job-row';
+        let expHtml='';
+        if (isTrish||isAndrew) {
+          const jobExps=allExpenses.filter(e=>String(e['Job Name']||'').trim().toLowerCase()===name.toLowerCase());
+          if (jobExps.length>0) expHtml='<div class="job-expenses-sub">'+jobExps.map(e=>'<span class="exp-row">$'+parseFloat(e['Amount']||0).toFixed(2)+' · '+esc(e['Crew Name']||'?')+' · '+esc(e['Date']||'')+'</span>').join('')+'</div>';
+        }
+        row.innerHTML='<div class="week-job-row-header"><span class="week-job-name">'+(i+1)+'. '+esc(name)+'</span><span class="week-job-profit">$'+profit.toFixed(2)+'</span></div>'+expHtml;
         listEl.appendChild(row);
       });
-
-      const crew = Math.max(0, totalProfit) * 0.15;
-      document.getElementById('week-total-profit').textContent = '$' + totalProfit.toFixed(2);
-      document.getElementById('week-total-crew').textContent   = '$' + crew.toFixed(2);
-      totalsEl.style.display = 'block';
+      const crew=Math.max(0,totalProfit)*0.15;
+      document.getElementById('week-total-profit').textContent='$'+totalProfit.toFixed(2);
+      document.getElementById('week-total-crew').textContent='$'+crew.toFixed(2);
+      totalsEl.style.display='block';
     }
 
-    function esc(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    async function renderExpensesView() {
+      const listEl=document.getElementById('expenses-view-list');
+      listEl.innerHTML='<div class="week-empty">Loading…</div>';
+      await loadExpenses();
+      if (!allExpenses.length) { listEl.innerHTML='<div class="week-empty">No expenses logged yet.</div>'; return; }
+      const sorted=[...allExpenses].sort((a,b)=>(b['Date']||'').localeCompare(a['Date']||''));
+      listEl.innerHTML=sorted.map(e=>{
+        const amt=parseFloat(e['Amount']||0).toFixed(2), job=esc(e['Job Name']||'—'), crew=esc(e['Crew Name']||'—'), date=esc(e['Date']||'');
+        return '<div class="exp-list-row"><div style="display:flex;justify-content:space-between;"><span style="font-weight:600;color:#111827;font-size:15px;">'+job+'</span><span style="font-weight:700;color:#1b4332;font-size:15px;">$'+amt+'</span></div><div style="font-size:12px;color:#6b7280;margin-top:3px;">'+crew+' · '+date+'</div></div>';
+      }).join('');
     }
+
+    function updateAndrewSnapshot() {
+      const {mon,sun}=getWeekBounds();
+      const weekJobs=allRows.filter(r=>{
+        if ((r['Status']||'').trim().toLowerCase()!=='paid') return false;
+        const cd=r['Invoice Paid Date']||r['Close Date']||''; if(!cd) return false;
+        const d=new Date(cd+'T12:00:00'); return d>=mon&&d<=sun;
+      });
+      let totalProfit=0;
+      weekJobs.forEach(r=>{ const bid=parseFloat(r['Bid Amount'])||0, mat=parseFloat(r['Jobber Costs']||r['Materials']||0); totalProfit+=(bid>0?bid-mat:0); });
+      const crewPay=Math.max(0,totalProfit)*0.15;
+      document.getElementById('snap-jobs').textContent=weekJobs.length;
+      document.getElementById('snap-profit').textContent='$'+totalProfit.toFixed(0);
+      document.getElementById('snap-crew').textContent='$'+crewPay.toFixed(0);
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      const pane=document.getElementById('tab-'+tab), btn=document.getElementById('nav-'+tab);
+      if(pane) pane.classList.add('active'); if(btn) btn.classList.add('active');
+      if(tab==='week') renderThisWeek();
+      if(tab==='expenses-view') renderExpensesView();
+      if(tab==='log-expense') populateJobPicker();
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {});
-      });
+      window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js',{scope:'./'}).catch(()=>{}); });
     }
 
+    initUI();
     loadJobs();
   </script>
 </body>
