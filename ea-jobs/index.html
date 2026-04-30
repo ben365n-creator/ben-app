@@ -491,7 +491,7 @@
 
       const weekJobs = allRows.filter(r => {
         if ((r['Status'] || '').trim().toLowerCase() !== 'paid') return false;
-        const cd = r['Close Date'] || r['close_date'] || '';
+        const cd = r['Invoice Paid Date'] || r['Close Date'] || r['close_date'] || '';
         if (!cd) return false;
         const d = new Date(cd + 'T12:00:00');
         return d >= mon && d <= sun;
