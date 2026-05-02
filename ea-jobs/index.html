@@ -238,7 +238,6 @@
 
   <!-- ══════════════════════════════════════════
        ROLE PICKER
-       Shown when no role found in URL or localStorage
   ══════════════════════════════════════════ -->
   <div id="role-picker" style="display:none;">
     <div class="picker-wrap">
@@ -255,7 +254,6 @@
 
   <!-- ══════════════════════════════════════════
        CREW SCREEN
-       Single full-screen view — no tabs, no nav
   ══════════════════════════════════════════ -->
   <div id="crew-screen" style="display:none;">
     <main>
@@ -292,7 +290,6 @@
 
   <!-- ══════════════════════════════════════════
        MAIN APP — Trish / Andrew
-       Tab panes driven by bottom nav
   ══════════════════════════════════════════ -->
   <div id="app-content" class="has-nav" style="display:none;">
 
@@ -394,11 +391,13 @@
   </div><!-- #app-content -->
 
   <script>
-    // ─── Webhooks ───────────────────────────────────────────────────────────
-    var GET_JOBS_URL     = 'https://hook.us2.make.com/t468y78tsu6awky7934ekh2sbeaxcuax';
+    // ─── Data URLs ──────────────────────────────────────────────────────────
+    // Reads use GitHub Pages static JSON (5-min cache, synced by Make.com scheduled scenario).
+    // Writes still go directly to Make.com webhooks (fire-and-forget, async OK).
+    var GET_JOBS_URL     = 'https://ben365n-creator.github.io/ben-app/ea-jobs/data/jobs.json';
+    var GET_EXPENSES_URL = 'https://ben365n-creator.github.io/ben-app/ea-jobs/data/expenses.json';
     var SUBMIT_URL       = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
     var LOG_EXPENSE_URL  = 'https://hook.us2.make.com/d34v6x6fggpxozjyhf8aojhondp824hx';
-    var GET_EXPENSES_URL = 'https://hook.us2.make.com/fnbs3jc71w8m3l86wn0ns1t085atdosj';
     var NEW_JOB_URL      = 'https://hook.us2.make.com/rxi8k7sef51wjhp78sdghd58w91q1jm2';
 
     // ─── Role detection ─────────────────────────────────────────────────────
@@ -437,10 +436,9 @@
     }
     function fmt$(n) { return '$' + (parseFloat(n) || 0).toFixed(2); }
 
-    // Week bounds: Sunday through Saturday of the current week
     function getWeekBounds() {
       var now = new Date();
-      var day = now.getDay(); // 0 = Sunday
+      var day = now.getDay();
       var sun = new Date(now);
       sun.setDate(now.getDate() - day);
       sun.setHours(0, 0, 0, 0);
@@ -452,58 +450,24 @@
     var MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     function fmtDate(d) { return MONTHS[d.getMonth()] + ' ' + d.getDate(); }
 
-    // ─── batchGet response parser ────────────────────────────────────────────
-    // Make.com returns: { valueRanges: [{ values: [[hdr,...],[row,...],...] }] }
-    function parseBatchGetResponse(data) {
-      if (data && data.valueRanges && data.valueRanges[0] && data.valueRanges[0].values) {
-        var vr = data.valueRanges[0].values;
-        if (vr.length < 2) return [];
-        var headers = vr[0];
-        return vr.slice(1)
-          .filter(function(row) { return row.some(function(v) { return v !== ''; }); })
-          .map(function(row) {
-            var obj = {};
-            headers.forEach(function(h, i) { obj[h] = row[i] !== undefined ? row[i] : ''; });
-            return obj;
-          });
-      }
-      // Fallback: already an array (legacy format)
-      if (Array.isArray(data)) return data;
-      return [];
-    }
-
-    // ─── API fetchers (POST, cache:no-store) ────────────────────────────────
-    // NOTE: Make.com returns plain-text "Accepted" when a scenario is processing
-    // asynchronously (isPaused state). We detect this and throw a clear error
-    // rather than letting JSON.parse crash with a cryptic SyntaxError.
+    // ─── API fetchers ────────────────────────────────────────────────────────
+    // Reads: GET from GitHub Pages static JSON files (no Make.com involvement).
+    // These files are refreshed every 5 minutes by Make.com scheduled sync scenario.
     async function fetchJobs() {
-      var r = await fetch(GET_JOBS_URL, {
-        method: 'POST', cache: 'no-store',
-        headers: { 'Content-Type': 'application/json' },
-        body: '{}'
-      });
-      if (!r.ok) throw new Error('jobs fetch failed');
-      var text = await r.text();
-      if (text.trim() === 'Accepted') throw new Error('Service temporarily unavailable — please try again in a moment');
-      var data = JSON.parse(text);
-      return parseBatchGetResponse(data);
+      var r = await fetch(GET_JOBS_URL, { method: 'GET', cache: 'no-store' });
+      if (!r.ok) throw new Error('jobs fetch failed (' + r.status + ')');
+      var data = await r.json();
+      return Array.isArray(data) ? data : [];
     }
     async function fetchExpenses() {
-      var r = await fetch(GET_EXPENSES_URL, {
-        method: 'POST', cache: 'no-store',
-        headers: { 'Content-Type': 'application/json' },
-        body: '{}'
-      });
-      if (!r.ok) throw new Error('expenses fetch failed');
-      var text = await r.text();
-      if (text.trim() === 'Accepted') throw new Error('Service temporarily unavailable — please try again in a moment');
-      var data = JSON.parse(text);
-      return parseBatchGetResponse(data);
+      var r = await fetch(GET_EXPENSES_URL, { method: 'GET', cache: 'no-store' });
+      if (!r.ok) throw new Error('expenses fetch failed (' + r.status + ')');
+      var data = await r.json();
+      return Array.isArray(data) ? data : [];
     }
 
     // ─── Init ────────────────────────────────────────────────────────────────
     function init() {
-      // Unregister any service workers left from previous app versions
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(regs) {
           regs.forEach(function(r) { r.unregister(); });
@@ -523,7 +487,6 @@
         return;
       }
 
-      // Trish or Andrew
       document.getElementById('header-sub').textContent = isTrish
         ? 'Trish — Exterior Arts Renovations'
         : 'Andrew — Exterior Arts Renovations';
@@ -567,7 +530,6 @@
       var btn  = document.getElementById('nav-' + tab);
       if (pane) pane.classList.add('active');
       if (btn)  btn.classList.add('active');
-      // Re-fetch live data every time a data tab becomes visible
       if (tab === 'close')         loadAndRefreshClose();
       if (tab === 'week')          loadAndRenderWeek();
       if (tab === 'expenses-view') loadAndRenderExpenses();
@@ -585,7 +547,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════
-    //  CREW — Log Expense (single screen)
+    //  CREW — Log Expense
     // ═══════════════════════════════════════════════════════════
 
     async function loadCrewJobs() {
@@ -692,10 +654,8 @@
     function onNJInput() {
       var name   = document.getElementById('njName').value.trim();
       var addr   = document.getElementById('njAddr').value.trim();
-      // Strip commas (iOS locale uses comma as decimal separator)
       var rawBid = document.getElementById('njBid').value.replace(/,/g, '.');
       var bid    = parseFloat(rawBid);
-      // Live preview pill
       var pill = document.getElementById('nj-preview');
       if (name && addr) {
         var parts = name.split(' ').filter(Boolean);
@@ -705,7 +665,6 @@
       } else {
         pill.style.display = 'none';
       }
-      // Button enabled only when all three fields are valid
       document.getElementById('njSubmitBtn').disabled =
         !(name && addr && !isNaN(bid) && bid > 0);
     }
@@ -733,7 +692,6 @@
           '"' + jobName + '" created for ' + fmt$(bid) + '. Now live in Close Job.';
         document.getElementById('nj-form-wrap').style.display = 'none';
         document.getElementById('nj-success-wrap').style.display = 'block';
-        // Auto-switch to Close Job after user sees confirmation
         setTimeout(function() { switchTab('close'); }, 1800);
       } catch(e) {
         errEl.textContent = 'Failed to create job — please try again.';
