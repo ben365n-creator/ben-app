@@ -395,7 +395,7 @@
 
   <script>
     // ─── Webhooks ───────────────────────────────────────────────────────────
-    var GET_JOBS_URL     = 'https://hook.us2.make.com/a7q8pqnliyqb5ut5r6wtc5a3493gl78g';
+    var GET_JOBS_URL     = 'https://hook.us2.make.com/t468y78tsu6awky7934ekh2sbeaxcuax';
     var SUBMIT_URL       = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
     var LOG_EXPENSE_URL  = 'https://hook.us2.make.com/d34v6x6fggpxozjyhf8aojhondp824hx';
     var GET_EXPENSES_URL = 'https://hook.us2.make.com/fnbs3jc71w8m3l86wn0ns1t085atdosj';
@@ -473,6 +473,9 @@
     }
 
     // ─── API fetchers (POST, cache:no-store) ────────────────────────────────
+    // NOTE: Make.com returns plain-text "Accepted" when a scenario is processing
+    // asynchronously (isPaused state). We detect this and throw a clear error
+    // rather than letting JSON.parse crash with a cryptic SyntaxError.
     async function fetchJobs() {
       var r = await fetch(GET_JOBS_URL, {
         method: 'POST', cache: 'no-store',
@@ -480,7 +483,9 @@
         body: '{}'
       });
       if (!r.ok) throw new Error('jobs fetch failed');
-      var data = await r.json();
+      var text = await r.text();
+      if (text.trim() === 'Accepted') throw new Error('Service temporarily unavailable — please try again in a moment');
+      var data = JSON.parse(text);
       return parseBatchGetResponse(data);
     }
     async function fetchExpenses() {
@@ -490,7 +495,9 @@
         body: '{}'
       });
       if (!r.ok) throw new Error('expenses fetch failed');
-      var data = await r.json();
+      var text = await r.text();
+      if (text.trim() === 'Accepted') throw new Error('Service temporarily unavailable — please try again in a moment');
+      var data = JSON.parse(text);
       return parseBatchGetResponse(data);
     }
 
