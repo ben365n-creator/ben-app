@@ -455,14 +455,26 @@
     // type=jobs     → all jobs from ActiveJobs sheet (PWA filters for active)
     // type=expenses → all expenses from Expenses sheet
     // type=week     → all jobs from ActiveJobs sheet (PWA filters by closed + date)
+    //
+    // ActiveJobs tab has no header row in its data range (row 1 = instruction text,
+    // row 2+ = data rows). JOBS_HEADERS maps column positions A-G to field names.
+    // Expenses tab DOES have headers in row 1 — parseSheetResponse auto-detects them.
+    var JOBS_HEADERS = ['Job Name', 'Client', 'Bid Amount', 'Start Date', 'Status', 'Invoice Paid Date', 'Jobber Costs'];
 
-    function parseSheetResponse(data) {
+    function parseSheetResponse(data, headers) {
       try {
         var vr = (data.valueRanges || [])[0];
-        if (!vr || !vr.values || vr.values.length < 2) return [];
-        var headers = vr.values[0];
+        if (!vr || !vr.values) return [];
+        var startIdx;
+        if (headers) {
+          startIdx = 0;            // caller supplied headers — all rows are data rows
+        } else {
+          if (vr.values.length < 2) return [];
+          headers  = vr.values[0]; // first row in range is the header row
+          startIdx = 1;
+        }
         var rows = [];
-        for (var i = 1; i < vr.values.length; i++) {
+        for (var i = startIdx; i < vr.values.length; i++) {
           var row = vr.values[i];
           var obj = {};
           headers.forEach(function(h, idx) {
@@ -481,7 +493,7 @@
         body: JSON.stringify({ type: 'jobs' })
       });
       if (!r.ok) throw new Error('jobs fetch failed (' + r.status + ')');
-      return parseSheetResponse(await r.json());
+      return parseSheetResponse(await r.json(), JOBS_HEADERS);
     }
 
     async function fetchExpenses() {
@@ -501,7 +513,7 @@
         body: JSON.stringify({ type: 'week' })
       });
       if (!r.ok) throw new Error('week fetch failed (' + r.status + ')');
-      return parseSheetResponse(await r.json());
+      return parseSheetResponse(await r.json(), JOBS_HEADERS);
     }
 
     // ─── Init ────────────────────────────────────────────────────────────────
