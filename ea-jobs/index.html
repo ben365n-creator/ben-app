@@ -392,10 +392,10 @@
 
   <script>
     // ─── Data URLs ──────────────────────────────────────────────────────────
-    // Reads use GitHub Pages static JSON (5-min cache, synced by Make.com scheduled scenario).
+    // All reads POST to Scenario G (Make.com) with a type parameter — real-time,
+    // no GitHub JSON files, no sync lag.
     // Writes still go directly to Make.com webhooks (fire-and-forget, async OK).
-    var GET_JOBS_URL     = 'https://ben365n-creator.github.io/ben-app/ea-jobs/data/jobs.json';
-    var GET_EXPENSES_URL = 'https://ben365n-creator.github.io/ben-app/ea-jobs/data/expenses.json';
+    var DATA_URL         = 'https://hook.us2.make.com/fnbs3jc71w8m3l86wn0ns1t085atdosj';
     var SUBMIT_URL       = 'https://hook.us2.make.com/ca893d4gs5uyf0nhaxspy3d9njlmsl9w';
     var LOG_EXPENSE_URL  = 'https://hook.us2.make.com/d34v6x6fggpxozjyhf8aojhondp824hx';
     var NEW_JOB_URL      = 'https://hook.us2.make.com/rxi8k7sef51wjhp78sdghd58w91q1jm2';
@@ -451,19 +451,57 @@
     function fmtDate(d) { return MONTHS[d.getMonth()] + ' ' + d.getDate(); }
 
     // ─── API fetchers ────────────────────────────────────────────────────────
-    // Reads: GET from GitHub Pages static JSON files (no Make.com involvement).
-    // These files are refreshed every 5 minutes by Make.com scheduled sync scenario.
-    async function fetchJobs() {
-      var r = await fetch(GET_JOBS_URL, { method: 'GET', cache: 'no-store' });
-      if (!r.ok) throw new Error('jobs fetch failed (' + r.status + ')');
-      var data = await r.json();
-      return Array.isArray(data) ? data : [];
+    // All reads POST to Scenario G (Make.com) with a type parameter.
+    // type=jobs     → all jobs from ActiveJobs sheet (PWA filters for active)
+    // type=expenses → all expenses from Expenses sheet
+    // type=week     → all jobs from ActiveJobs sheet (PWA filters by closed + date)
+
+    function parseSheetResponse(data) {
+      try {
+        var vr = (data.valueRanges || [])[0];
+        if (!vr || !vr.values || vr.values.length < 2) return [];
+        var headers = vr.values[0];
+        var rows = [];
+        for (var i = 1; i < vr.values.length; i++) {
+          var row = vr.values[i];
+          var obj = {};
+          headers.forEach(function(h, idx) {
+            obj[h] = row[idx] !== undefined ? row[idx] : '';
+          });
+          rows.push(obj);
+        }
+        return rows;
+      } catch(e) { return []; }
     }
+
+    async function fetchJobs() {
+      var r = await fetch(DATA_URL, {
+        method: 'POST', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'jobs' })
+      });
+      if (!r.ok) throw new Error('jobs fetch failed (' + r.status + ')');
+      return parseSheetResponse(await r.json());
+    }
+
     async function fetchExpenses() {
-      var r = await fetch(GET_EXPENSES_URL, { method: 'GET', cache: 'no-store' });
+      var r = await fetch(DATA_URL, {
+        method: 'POST', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'expenses' })
+      });
       if (!r.ok) throw new Error('expenses fetch failed (' + r.status + ')');
-      var data = await r.json();
-      return Array.isArray(data) ? data : [];
+      return parseSheetResponse(await r.json());
+    }
+
+    async function fetchWeekJobs() {
+      var r = await fetch(DATA_URL, {
+        method: 'POST', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'week' })
+      });
+      if (!r.ok) throw new Error('week fetch failed (' + r.status + ')');
+      return parseSheetResponse(await r.json());
     }
 
     // ─── Init ────────────────────────────────────────────────────────────────
@@ -895,7 +933,7 @@
       headerEl.textContent = fmtDate(wb.sun) + ' – ' + fmtDate(wb.sat);
 
       try {
-        var results = await Promise.all([fetchJobs(), fetchExpenses()]);
+        var results = await Promise.all([fetchWeekJobs(), fetchExpenses()]);
         var rows    = results[0];
         var exps    = results[1];
         allRows     = rows;
