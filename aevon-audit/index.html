@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aevon — Uniform & Linen Invoice Audits</title>
+<meta name="description" content="Aevon audits Cintas, Aramark, Vestis, and UniFirst uniform and linen invoices for overcharges — before you pay them. Free first audit." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #0A1F44;
+    --navy-deep: #061634;
+    --ink: #0B1220;
+    --ink-2: #2B3344;
+    --muted: #5C6577;
+    --line: #E5E7EB;
+    --line-strong: #C9CED8;
+    --bg: #FFFFFF;
+    --card: #FFFFFF;
+    --red: #C8102E;
+    --max: 1120px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--navy); color: #fff; }
+
+  .wrap {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* Header */
+  header.site {
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .site-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 96px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    line-height: 0;
+  }
+  .brand img {
+    height: 64px;
+    width: auto;
+    display: block;
+  }
+  .nav-meta {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .nav-meta strong { color: var(--ink); font-weight: 500; }
+
+  /* Section base */
+  section { padding: 96px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: 0; }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0 0 24px 0;
+  }
+  .eyebrow .bullet {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--navy);
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 10px;
+    transform: translateY(-1px);
+  }
+
+  /* Hero */
+  .hero { padding: 120px 0 112px; }
+  .hero h1 {
+    font-size: clamp(40px, 6.4vw, 76px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 28px 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .hero .sub {
+    font-size: clamp(17px, 1.6vw, 20px);
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 60ch;
+    margin: 0 0 40px 0;
+    text-wrap: pretty;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--navy);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 16px 28px;
+    border-radius: 4px;
+    border: 1px solid var(--navy);
+    letter-spacing: -0.005em;
+    transition: background 120ms ease, border-color 120ms ease;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cta:hover { background: var(--navy-deep); border-color: var(--navy-deep); }
+  .cta .arrow {
+    display: inline-block;
+    width: 16px; height: 1px;
+    background: #fff;
+    position: relative;
+  }
+  .cta .arrow::after {
+    content: "";
+    position: absolute;
+    right: 0; top: -3px;
+    width: 7px; height: 7px;
+    border-top: 1px solid #fff;
+    border-right: 1px solid #fff;
+    transform: rotate(45deg);
+  }
+
+  .hero-meta {
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    max-width: 720px;
+  }
+  .hero-meta div { font-size: 13px; color: var(--muted); }
+  .hero-meta strong {
+    display: block;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    letter-spacing: -0.005em;
+  }
+
+  /* Proof */
+  .proof { background: #fff; }
+  .proof .head {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 48px;
+    max-width: 720px;
+  }
+  .proof h2 {
+    font-size: clamp(28px, 3.2vw, 40px);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--navy);
+    margin: 0;
+    font-weight: 700;
+    text-wrap: balance;
+  }
+  .proof .lede { color: var(--ink-2); margin: 0; max-width: 56ch; }
+
+  .ledger {
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .ledger-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding: 28px 32px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ledger-row:last-child { border-bottom: 0; }
+  .ledger-label {
+    font-size: 15px;
+    color: var(--muted);
+    letter-spacing: 0.005em;
+  }
+  .ledger-label .num {
+    display: inline-block;
+    width: 22px;
+    color: var(--line-strong);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+  .ledger-amount {
+    font-size: clamp(28px, 3.2vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--navy);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ledger-amount .per {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0;
+    margin-left: 6px;
+  }
+
+  .ledger-row.flag { background: #FFF5F6; }
+  .ledger-row.flag .ledger-label { color: var(--red); font-weight: 500; }
+  .ledger-row.flag .ledger-amount { color: var(--red); }
+  .ledger-row.flag .annual {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--red);
+    margin-top: 4px;
+    letter-spacing: 0;
+    opacity: 0.85;
+  }
+
+  .ledger-foot {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.005em;
+  }
+
+  /* Steps */
+  .steps h2 {
+    font-size: clamp(28px, 3.2vw, 40px);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--navy);
+    margin: 0 0 56px 0;
+    font-weight: 700;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+  .step {
+    padding: 36px 32px 36px 0;
+    border-right: 1px solid var(--line);
+    position: relative;
+  }
+  .step:last-child { border-right: 0; padding-right: 0; }
+  .step:not(:first-child) { padding-left: 32px; }
+  .step-num {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .step-num::before {
+    content: "";
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: var(--navy);
+  }
+  .step h3 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--navy);
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+  }
+  .step p {
+    margin: 0;
+    color: var(--ink-2);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  /* Form */
+  .form-section {
+    background: var(--navy);
+    color: #fff;
+    border-bottom: 0;
+  }
+  .form-section .eyebrow { color: rgba(255,255,255,0.55); }
+  .form-section .eyebrow .bullet { background: #fff; }
+  .form-section h2 {
+    font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0 0 20px 0;
+    font-weight: 700;
+    color: #fff;
+    text-wrap: balance;
+  }
+  .form-section .lede {
+    color: rgba(255,255,255,0.78);
+    font-size: 18px;
+    margin: 0 0 56px 0;
+    max-width: 52ch;
+  }
+
+  form.audit {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 28px;
+    max-width: 720px;
+  }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: rgba(255,255,255,0.78);
+  }
+  .field input[type="text"],
+  .field input[type="email"] {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.28);
+    color: #fff;
+    font: inherit;
+    font-size: 17px;
+    padding: 10px 0 12px;
+    border-radius: 0;
+    outline: none;
+    transition: border-color 120ms ease;
+    -webkit-appearance: none;
+  }
+  .field input::placeholder { color: rgba(255,255,255,0.35); }
+  .field input:focus { border-bottom-color: #fff; }
+  .field input:-webkit-autofill {
+    -webkit-text-fill-color: #fff;
+    -webkit-box-shadow: 0 0 0 1000px var(--navy) inset;
+    caret-color: #fff;
+  }
+
+  .submit-row {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 8px;
+  }
+  button.cta-light {
+    align-self: flex-start;
+    background: #fff;
+    color: var(--navy);
+    border: 1px solid #fff;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 16px 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.005em;
+    transition: background 120ms ease, color 120ms ease;
+  }
+  button.cta-light:hover { background: #E8EDF7; }
+  button.cta-light:disabled { opacity: 0.6; cursor: progress; }
+  .form-note {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    max-width: 56ch;
+    line-height: 1.55;
+  }
+  .form-status {
+    grid-column: 1 / -1;
+    font-size: 14px;
+    padding: 14px 16px;
+    border-radius: 4px;
+    display: none;
+  }
+  .form-status.show { display: block; }
+  .form-status.ok { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.24); }
+  .form-status.err { background: rgba(200,16,46,0.18); color: #FFD9DE; border: 1px solid rgba(255,200,200,0.35); }
+
+  /* Footer */
+  footer.site {
+    background: var(--navy);
+    color: rgba(255,255,255,0.55);
+    font-size: 13px;
+    padding: 28px 0;
+  }
+  footer .wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer a { color: rgba(255,255,255,0.78); text-decoration: none; }
+  footer a:hover { color: #fff; }
+
+  /* Responsive */
+  @media (max-width: 820px) {
+    section { padding: 72px 0; }
+    .hero { padding: 80px 0 72px; }
+    .hero-meta { grid-template-columns: 1fr 1fr; gap: 20px; }
+    .steps-grid { grid-template-columns: 1fr; border-top: 1px solid var(--line); }
+    .step {
+      padding: 28px 0 28px 0 !important;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .step:last-child { border-bottom: 0; }
+    .ledger-row {
+      grid-template-columns: 1fr;
+      padding: 22px 22px;
+      gap: 6px;
+    }
+    .ledger-amount { text-align: left; }
+    form.audit { grid-template-columns: 1fr; gap: 22px; }
+    .nav-meta { display: none; }
+  }
+  @media (max-width: 480px) {
+    body { font-size: 16px; }
+    .wrap { padding: 0 22px; }
+    .hero { padding: 64px 0 56px; }
+    .hero-meta { grid-template-columns: 1fr; }
+    .ledger-row { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap site-inner">
+    <a href="#top" class="brand" aria-label="Aevon — home">
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663508527288/QiNmDemupLMiIfEA.webp" alt="Aevon" />
+    </a>
+    <div class="nav-meta">Questions? Call <strong><a href="tel:+18652097235" style="color:inherit;text-decoration:none;">865-209-7235</a></strong> &nbsp;·&nbsp; <strong>bennorris@aevonco.com</strong></div>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow"><span class="bullet"></span>Invoice audit, before you pay</p>
+      <h1>Is Cintas Overcharging You?</h1>
+      <p class="sub">
+        Most businesses with a uniform crew find $1,000–$3,000 in overcharges every month.
+        We audit your invoice for free and show you exactly what to dispute — before you pay it.
+      </p>
+      <a href="#audit" class="cta" data-scroll>
+        Get My Free Audit
+        <span class="arrow" aria-hidden="true"></span>
+      </a>
+
+      <div class="hero-meta">
+        <div><strong>Free first audit</strong>No cost, no commitment.</div>
+        <div><strong>24-hour turnaround</strong>Report delivered next business day.</div>
+        <div><strong>Confidential</strong>Your invoice never leaves our review.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="proof">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow"><span class="bullet"></span>Recent audit finding</p>
+        <h2>What we found on a single monthly invoice.</h2>
+        <p class="lede">Three lines, one comparison. The gap is what we recover.</p>
+      </div>
+
+      <div class="ledger" role="table" aria-label="Recent audit finding">
+        <div class="ledger-row" role="row">
+          <div class="ledger-label" role="cell"><span class="num">01</span>Your Cintas invoice</div>
+          <div class="ledger-amount" role="cell">$1,090.50<span class="per">/ month</span></div>
+        </div>
+        <div class="ledger-row" role="row">
+          <div class="ledger-label" role="cell"><span class="num">02</span>What your contract says you should pay</div>
+          <div class="ledger-amount" role="cell">$576.20<span class="per">/ month</span></div>
+        </div>
+        <div class="ledger-row flag" role="row">
+          <div class="ledger-label" role="cell"><span class="num">03</span>Overcharged this month</div>
+          <div class="ledger-amount" role="cell">
+            $514.30
+            <span class="annual">$6,171.60 / year</span>
+          </div>
+        </div>
+      </div>
+      <p class="ledger-foot">Actual findings from a recent audit. Client name withheld.</p>
+    </div>
+  </section>
+
+  <section class="steps">
+    <div class="wrap">
+      <p class="eyebrow"><span class="bullet"></span>How it works</p>
+      <h2>Three steps. Roughly thirty seconds of your time.</h2>
+
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-num">Step 01</div>
+          <h3>Send us your invoice</h3>
+          <p>Share your Cintas, Aramark, or Vestis invoice with us — takes 30 seconds.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">Step 02</div>
+          <h3>We audit it</h3>
+          <p>We compare every line against your contract and flag anything that does not match — you do not have to do a thing.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">Step 03</div>
+          <h3>We send you the report</h3>
+          <p>Within 24 hours, you receive a full audit report showing exactly what you were overcharged and what we are disputing on your behalf.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" id="audit">
+    <div class="wrap">
+      <p class="eyebrow"><span class="bullet"></span>Request your audit</p>
+      <h2>Get Your Free Audit</h2>
+      <p class="lede">No cost. No commitment. Tell us about your business below — we'll reach out within 1 business day to walk through your invoice. If we find nothing, you owe nothing.</p>
+
+      <form class="audit" id="auditForm" novalidate>
+        <div class="field">
+          <label for="firstName">First name</label>
+          <input id="firstName" name="firstName" type="text" autocomplete="given-name" required />
+        </div>
+        <div class="field">
+          <label for="businessName">Business name</label>
+          <input id="businessName" name="businessName" type="text" autocomplete="organization" required />
+        </div>
+        <div class="field full">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+
+        <div class="submit-row">
+          <button type="submit" class="cta-light" id="submitBtn">Send Me My Free Audit</button>
+          <p class="form-note">
+            We handle the entire process. We'll reach out within 1 business day. Your details are kept strictly confidential.
+          </p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div>© 2026 Aevon</div>
+    <div><a href="tel:+18652097235">865-209-7235</a> &nbsp;·&nbsp; <a href="mailto:bennorris@aevonco.com">bennorris@aevonco.com</a></div>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll for the hero CTA
+  document.querySelectorAll('a[data-scroll]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id && id.startsWith('#')) {
+        const el = document.querySelector(id);
+        if (el) {
+          e.preventDefault();
+          window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 12, behavior: 'smooth' });
+          const focusEl = el.querySelector('input, button, [tabindex]');
+          if (focusEl) setTimeout(() => focusEl.focus({ preventScroll: true }), 500);
+        }
+      }
+    });
+  });
+
+  // Form submission to Make.com webhook (preserves existing integration)
+  const WEBHOOK = 'https://hook.us2.make.com/cg76pi117n2g8il2q0aa9ger3jr4m6pg';
+  const form = document.getElementById('auditForm');
+  const status = document.getElementById('formStatus');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.classList.remove('show', 'ok', 'err');
+
+    const firstName = form.firstName.value.trim();
+    const businessName = form.businessName.value.trim();
+    const email = form.email.value.trim();
+
+    if (!firstName || !businessName || !email) {
+      status.textContent = 'Please complete all fields.';
+      status.className = 'form-status show err';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Sending…';
+
+    const payload = { firstName, businessName, email };
+
+    function done(success) {
+      if (success) {
+        form.reset();
+        status.textContent = 'Got it, ' + firstName + ' — we’ll be in touch within 1 business day to walk through your invoice.';
+        status.className = 'form-status show ok';
+      } else {
+        status.textContent = 'Something went wrong — please email bennorris@aevonco.com directly.';
+        status.className = 'form-status show err';
+      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+
+    try {
+      const res = await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('non-200');
+      done(true);
+    } catch (_) {
+      // Fallback: text/plain (simple request, skips CORS preflight)
+      try {
+        await fetch(WEBHOOK, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+        done(true);
+      } catch (err2) {
+        done(false);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
