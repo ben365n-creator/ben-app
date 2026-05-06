@@ -348,6 +348,11 @@
     letter-spacing: 0.02em;
     color: rgba(255,255,255,0.78);
   }
+  .field label .opt {
+    color: rgba(255,255,255,0.5);
+    font-weight: 400;
+    margin-left: 6px;
+  }
   .field input[type="text"],
   .field input[type="email"] {
     background: transparent;
@@ -446,7 +451,15 @@
     }
     .ledger-amount { text-align: left; }
     form.audit { grid-template-columns: 1fr; gap: 22px; }
-    .nav-meta { display: none; }
+    .site-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      height: auto;
+      padding: 16px 0;
+      gap: 10px;
+    }
+    .nav-meta { font-size: 13px; line-height: 1.55; }
+    .brand img { height: 48px; }
   }
   @media (max-width: 480px) {
     body { font-size: 16px; }
@@ -561,8 +574,8 @@
           <input id="businessName" name="businessName" type="text" autocomplete="organization" required />
         </div>
         <div class="field full">
-          <label for="email">Email address</label>
-          <input id="email" name="email" type="email" autocomplete="email" required />
+          <label for="email">Email address <span class="opt">(optional)</span></label>
+          <input id="email" name="email" type="email" autocomplete="email" />
         </div>
 
         <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
@@ -617,8 +630,8 @@
     const businessName = form.businessName.value.trim();
     const email = form.email.value.trim();
 
-    if (!firstName || !businessName || !email) {
-      status.textContent = 'Please complete all fields.';
+    if (!firstName || !businessName) {
+      status.textContent = 'Please enter your first name and business name.';
       status.className = 'form-status show err';
       return;
     }
@@ -627,7 +640,8 @@
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Sending…';
 
-    const payload = { firstName, businessName, email };
+    const payload = { firstName, businessName };
+    if (email) payload.email = email;
 
     function done(success) {
       if (success) {
