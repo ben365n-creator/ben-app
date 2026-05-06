@@ -78,6 +78,7 @@ $shortcutPath = Join-Path $env:USERPROFILE 'Desktop\Screenshot Compressor.lnk'
 $shortcut = $WshShell.CreateShortcut($shortcutPath)
 $shortcut.TargetPath = "$screenshotsDir\screenshot-compressor.bat"
 $shortcut.WorkingDirectory = $screenshotsDir
+$shortcut.IconLocation = 'C:\Windows\System32\cmd.exe,0'
 $shortcut.Save()
 
 Write-Host '✅ Done! Check your Desktop.'
