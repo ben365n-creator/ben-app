@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Uniform Invoice Audit | Aevon AI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #090909;
+      color: #fff;
+      min-height: 100vh;
+    }
+    .page { max-width: 640px; margin: 0 auto; padding: 56px 24px 80px; }
+
+    /* Header */
+    .logo {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.18em;
+      color: #555; text-transform: uppercase; margin-bottom: 52px;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      background: rgba(229, 62, 62, 0.12);
+      border: 1px solid rgba(229, 62, 62, 0.4);
+      color: #f87171;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 5px 14px;
+      border-radius: 100px; margin-bottom: 22px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 6vw, 46px);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+    h1 span { color: #f87171; }
+
+    .subtitle {
+      font-size: 17px; color: #777;
+      line-height: 1.65; margin-bottom: 44px;
+    }
+
+    /* Social proof */
+    .proof {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: #1c1c1c;
+      border: 1px solid #1c1c1c; border-radius: 12px;
+      overflow: hidden; margin-bottom: 44px;
+    }
+    .proof-item {
+      background: #111; padding: 20px 16px; text-align: center;
+    }
+    .proof-number {
+      font-size: 26px; font-weight: 800; color: #fff; display: block;
+    }
+    .proof-label {
+      font-size: 11px; color: #555; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-top: 4px; display: block;
+    }
+
+    /* Form card */
+    .card {
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 16px;
+      padding: 36px 32px;
+    }
+    .card-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+    .card-sub { font-size: 14px; color: #555; margin-bottom: 28px; line-height: 1.5; }
+
+    .field { margin-bottom: 18px; }
+    label {
+      display: block; font-size: 11px; font-weight: 700;
+      color: #555; text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+    input {
+      width: 100%; padding: 13px 15px;
+      background: #161616; border: 1px solid #242424;
+      border-radius: 8px; color: #fff; font-size: 15px;
+      outline: none; transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+    input:focus { border-color: #e53e3e; }
+    input::placeholder { color: #383838; }
+
+    .btn {
+      width: 100%; padding: 15px;
+      background: #e53e3e; border: none; border-radius: 8px;
+      color: #fff; font-size: 16px; font-weight: 700;
+      cursor: pointer; margin-top: 6px;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.01em;
+    }
+    .btn:hover:not(:disabled) { background: #c53030; }
+    .btn:active:not(:disabled) { transform: scale(0.99); }
+    .btn:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; }
+
+    .disclaimer {
+      font-size: 12px; color: #444;
+      text-align: center; margin-top: 14px; line-height: 1.5;
+    }
+
+    .error-msg {
+      color: #f87171; font-size: 13px;
+      text-align: center; margin-top: 12px;
+      display: none;
+    }
+
+    /* Success */
+    .success {
+      text-align: center; padding: 24px 0; display: none;
+    }
+    .success-icon { font-size: 44px; margin-bottom: 16px; }
+    .success-title { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+    .success-body { font-size: 15px; color: #666; line-height: 1.65; }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 20px; }
+      .proof-number { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="logo">Aevon AI</div>
+
+    <div class="badge">Free — No Obligation</div>
+    <h1>You're Probably<br>Overpaying for<br><span>Your Uniforms</span></h1>
+    <p class="subtitle">
+      Most uniform service contracts contain hidden escalation clauses
+      and unnecessary charges. We find them — at no cost to you.
+    </p>
+
+    <div class="proof">
+      <div class="proof-item">
+        <span class="proof-number">$500+</span>
+        <span class="proof-label">Avg. Monthly Savings</span>
+      </div>
+      <div class="proof-item">
+        <span class="proof-number">15 min</span>
+        <span class="proof-label">Audit Takes</span>
+      </div>
+      <div class="proof-item">
+        <span class="proof-number">$0</span>
+        <span class="proof-label">Cost to You</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="form-view">
+        <div class="card-title">Request Your Free Audit</div>
+        <div class="card-sub">We'll review your current invoice and show you exactly where you can save.</div>
+
+        <form id="auditForm" novalidate>
+          <div class="field">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName"
+              placeholder="John" required autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label for="businessName">Business Name</label>
+            <input type="text" id="businessName" name="businessName"
+              placeholder="Acme Roofing Co." required autocomplete="organization">
+          </div>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email"
+              placeholder="john@yourbusiness.com" required autocomplete="email">
+          </div>
+
+          <button type="submit" class="btn" id="submitBtn">
+            Get My Free Audit &rarr;
+          </button>
+          <div class="error-msg" id="errorMsg">
+            Something went wrong — please try again.
+          </div>
+        </form>
+
+        <p class="disclaimer">We'll reach out within 1 business day. No spam, ever.</p>
+      </div>
+
+      <div class="success" id="success-view">
+        <div class="success-icon">&#9989;</div>
+        <div class="success-title">Request Received!</div>
+        <div class="success-body">
+          Thanks, <strong id="successName"></strong> — we'll be in touch within 1 business day
+          to walk through your invoice together.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WEBHOOK = 'https://hook.us2.make.com/cg76pi117n2g8il2q0aa9ger3jr4m6pg';
+
+    document.getElementById('auditForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const btn = document.getElementById('submitBtn');
+      const errEl = document.getElementById('errorMsg');
+
+      const firstName    = document.getElementById('firstName').value.trim();
+      const businessName = document.getElementById('businessName').value.trim();
+      const email        = document.getElementById('email').value.trim();
+
+      if (!firstName || !businessName || !email) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      errEl.style.display = 'none';
+
+      const payload = { firstName, businessName, email };
+
+      try {
+        const res = await fetch(WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('non-200');
+        showSuccess(firstName);
+      } catch (_) {
+        // Fallback: send as text/plain (simple request, no CORS preflight)
+        try {
+          await fetch(WEBHOOK, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload)
+          });
+          showSuccess(firstName);
+        } catch (err2) {
+          errEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Get My Free Audit →';
+        }
+      }
+    });
+
+    function showSuccess(name) {
+      document.getElementById('successName').textContent = name;
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('success-view').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
