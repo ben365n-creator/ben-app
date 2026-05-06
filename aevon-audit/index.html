@@ -375,6 +375,63 @@
     caret-color: #fff;
   }
 
+  .file {
+    grid-column: 1 / -1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+    border: 1px dashed rgba(255,255,255,0.32);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.02);
+    transition: border-color 120ms ease, background 120ms ease;
+    cursor: pointer;
+  }
+  .file:hover, .file.drag { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.04); }
+  .file-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .file-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+  }
+  .file-hint {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 2px;
+  }
+  .file-button {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 3px;
+    color: #fff;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+  }
+  .file-button:hover { border-color: #fff; background: rgba(255,255,255,0.06); }
+  .file input[type="file"] {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); border: 0;
+  }
+  .file-chosen {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 2px;
+    word-break: break-all;
+  }
+
   .submit-row {
     grid-column: 1 / -1;
     display: flex;
@@ -562,7 +619,7 @@
     <div class="wrap">
       <p class="eyebrow"><span class="bullet"></span>Request your audit</p>
       <h2>Get Your Free Audit</h2>
-      <p class="lede">No cost. No commitment. Tell us about your business below — we'll reach out within 1 business day to walk through your invoice. If we find nothing, you owe nothing.</p>
+      <p class="lede">No cost. No commitment. Upload your invoice below — we'll audit it and email your full report within 24 hours. If we find nothing, you owe nothing.</p>
 
       <form class="audit" id="auditForm" novalidate>
         <div class="field">
@@ -578,12 +635,24 @@
           <input id="email" name="email" type="email" autocomplete="email" />
         </div>
 
+        <label class="file" id="fileDrop" for="invoice">
+          <div class="file-row">
+            <div>
+              <div class="file-label">Upload your invoice PDF</div>
+              <div class="file-hint">Cintas, Aramark, or Vestis · PDF up to 5&nbsp;MB</div>
+            </div>
+            <span class="file-button" aria-hidden="true">Choose file</span>
+          </div>
+          <div class="file-chosen" id="fileChosen" hidden></div>
+          <input id="invoice" name="invoice" type="file" accept="application/pdf,.pdf" required />
+        </label>
+
         <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
 
         <div class="submit-row">
           <button type="submit" class="cta-light" id="submitBtn">Send Me My Free Audit</button>
           <p class="form-note">
-            We handle the entire process. We'll reach out within 1 business day. Your details are kept strictly confidential.
+            We handle the entire process. Your invoice is kept strictly confidential.
           </p>
         </div>
       </form>
@@ -622,6 +691,38 @@
   const status = document.getElementById('formStatus');
   const submitBtn = document.getElementById('submitBtn');
 
+  // File input UI — wire dropzone, click-to-pick, and chosen-file display
+  function wireFile(dropId, inputId, chosenId) {
+    const drop = document.getElementById(dropId);
+    const input = document.getElementById(inputId);
+    const chosen = document.getElementById(chosenId);
+    if (!drop || !input || !chosen) return { input, show: () => {} };
+
+    function show(file) {
+      if (!file) { chosen.hidden = true; chosen.textContent = ''; return; }
+      const kb = file.size / 1024;
+      const size = kb > 1024 ? (kb/1024).toFixed(1) + ' MB' : Math.round(kb) + ' KB';
+      chosen.hidden = false;
+      chosen.textContent = '✓ ' + file.name + '  ·  ' + size;
+    }
+
+    input.addEventListener('change', () => show(input.files[0]));
+    ['dragenter', 'dragover'].forEach(ev =>
+      drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('drag'); })
+    );
+    ['dragleave', 'drop'].forEach(ev =>
+      drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('drag'); })
+    );
+    drop.addEventListener('drop', e => {
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        input.files = e.dataTransfer.files;
+        show(input.files[0]);
+      }
+    });
+    return { input, show };
+  }
+  const invoiceFile = wireFile('fileDrop', 'invoice', 'fileChosen');
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     status.classList.remove('show', 'ok', 'err');
@@ -629,9 +730,15 @@
     const firstName = form.firstName.value.trim();
     const businessName = form.businessName.value.trim();
     const email = form.email.value.trim();
+    const invoice = form.invoice.files[0];
 
     if (!firstName || !businessName) {
       status.textContent = 'Please enter your first name and business name.';
+      status.className = 'form-status show err';
+      return;
+    }
+    if (!invoice) {
+      status.textContent = 'Please attach your invoice PDF.';
       status.className = 'form-status show err';
       return;
     }
@@ -640,13 +747,17 @@
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Sending…';
 
-    const payload = { firstName, businessName };
-    if (email) payload.email = email;
+    const fd = new FormData();
+    fd.append('firstName', firstName);
+    fd.append('businessName', businessName);
+    if (email) fd.append('email', email);
+    fd.append('invoice', invoice);
 
     function done(success) {
       if (success) {
         form.reset();
-        status.textContent = 'Got it, ' + firstName + ' — we’ll be in touch within 1 business day to walk through your invoice.';
+        invoiceFile.show(null);
+        status.textContent = 'Got it, ' + firstName + ' — we’ll review your invoice and send your audit report within 24 hours.';
         status.className = 'form-status show ok';
       } else {
         status.textContent = 'Something went wrong — please email bennorris@aevonco.com directly.';
@@ -657,26 +768,11 @@
     }
 
     try {
-      const res = await fetch(WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      const res = await fetch(WEBHOOK, { method: 'POST', body: fd });
       if (!res.ok) throw new Error('non-200');
       done(true);
     } catch (_) {
-      // Fallback: text/plain (simple request, skips CORS preflight)
-      try {
-        await fetch(WEBHOOK, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(payload)
-        });
-        done(true);
-      } catch (err2) {
-        done(false);
-      }
+      done(false);
     }
   });
 </script>
