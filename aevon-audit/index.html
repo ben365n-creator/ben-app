@@ -487,6 +487,38 @@
   .form-status.ok { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.24); }
   .form-status.err { background: rgba(200,16,46,0.18); color: #FFD9DE; border: 1px solid rgba(255,200,200,0.35); }
 
+  /* Temporary debug box (webhook response/payload) */
+  .form-debug {
+    grid-column: 1 / -1;
+    background: rgba(0,0,0,0.28);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 4px;
+    padding: 16px 18px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.86);
+    max-height: 360px;
+    overflow: auto;
+  }
+  .form-debug[hidden] { display: none; }
+  .form-debug-title {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 10px;
+  }
+  .form-debug pre {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
   /* Footer */
   footer.site {
     background: var(--navy);
@@ -664,6 +696,11 @@
 
         <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
 
+        <div class="form-debug" id="formDebug" hidden>
+          <div class="form-debug-title">Debug · webhook response (temporary)</div>
+          <pre id="formDebugBody"></pre>
+        </div>
+
         <div class="submit-row">
           <button type="submit" class="cta-light" id="submitBtn">Send Me My Free Audit</button>
           <p class="form-note">
@@ -700,11 +737,15 @@
     });
   });
 
-  // Form submission to Make.com webhook (preserves existing integration)
-  const WEBHOOK = 'https://hook.us2.make.com/cg76pi117n2g8il2q0aa9ger3jr4m6pg';
+  // Form submission goes to our Vercel function, which holds the
+  // Make.com webhook URL in MAKE_WEBHOOK_URL env and uploads the PDF
+  // to Vercel Blob to produce a permanent public URL.
+  const SUBMIT_ENDPOINT = '/api/submit-lead';
   const form = document.getElementById('auditForm');
   const status = document.getElementById('formStatus');
   const submitBtn = document.getElementById('submitBtn');
+  const debugBox = document.getElementById('formDebug');
+  const debugBody = document.getElementById('formDebugBody');
 
   // File input UI — wire dropzone, click-to-pick, and chosen-file display
   function wireFile(dropId, inputId, chosenId) {
@@ -738,9 +779,23 @@
   }
   const invoiceFile = wireFile('fileDrop', 'invoice', 'fileChosen');
 
+  function showDebug(data) {
+    if (!debugBox || !debugBody) return;
+    const lines = [];
+    if (data.webhookStatus !== undefined) lines.push('Webhook response status: ' + data.webhookStatus);
+    if (data.webhookBody !== undefined) lines.push('Webhook response body: ' + (data.webhookBody === '' ? '(empty)' : data.webhookBody));
+    if (data.invoiceFileName !== undefined) lines.push('Invoice file name: ' + (data.invoiceFileName || '(none)'));
+    if (data.invoiceFileUrl !== undefined) lines.push('Invoice URL: ' + (data.invoiceFileUrl || '(none)'));
+    if (data.payload) lines.push('Payload sent:\n' + JSON.stringify(data.payload, null, 2));
+    if (data.error) lines.push('Error: ' + data.error);
+    debugBody.textContent = lines.join('\n\n');
+    debugBox.hidden = false;
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     status.classList.remove('show', 'ok', 'err');
+    if (debugBox) debugBox.hidden = true;
 
     const firstName = form.firstName.value.trim();
     const businessName = form.businessName.value.trim();
@@ -765,30 +820,56 @@
     const fd = new FormData();
     fd.append('firstName', firstName);
     fd.append('businessName', businessName);
-    if (email) fd.append('email', email);
+    fd.append('email', email);
+    fd.append('phone', '');
     fd.append('invoice', invoice);
 
-    function done(success) {
-      if (success) {
-        form.reset();
-        invoiceFile.show(null);
-        status.textContent = 'Got it, ' + firstName + ' — we’ll review your invoice and send your audit report within 24 hours.';
-        status.className = 'form-status show ok';
-      } else {
-        status.textContent = 'Something went wrong — please email bennorris@aevonco.com directly.';
-        status.className = 'form-status show err';
+    console.log('[audit-form] submitting', {
+      firstName,
+      businessName,
+      email,
+      invoice: { name: invoice.name, size: invoice.size, type: invoice.type },
+    });
+
+    let result = { ok: false, error: 'No response from server' };
+    try {
+      const res = await fetch(SUBMIT_ENDPOINT, { method: 'POST', body: fd });
+      const text = await res.text();
+      console.log('[audit-form] /api/submit-lead status', res.status);
+      console.log('[audit-form] /api/submit-lead body', text);
+      try {
+        result = JSON.parse(text);
+      } catch (parseErr) {
+        result = {
+          ok: res.ok,
+          webhookStatus: res.status,
+          webhookBody: text,
+          error: 'Server response was not JSON',
+        };
       }
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
+    } catch (err) {
+      console.error('[audit-form] fetch failed', err);
+      result = { ok: false, error: String(err && err.message ? err.message : err) };
     }
 
-    try {
-      const res = await fetch(WEBHOOK, { method: 'POST', body: fd });
-      if (!res.ok) throw new Error('non-200');
-      done(true);
-    } catch (_) {
-      done(false);
+    console.log('[audit-form] webhook payload', result.payload);
+    console.log('[audit-form] webhook response status/body', result.webhookStatus, result.webhookBody);
+    console.log('[audit-form] invoice file URL', result.invoiceFileUrl);
+
+    showDebug(result);
+
+    if (result.ok) {
+      form.reset();
+      invoiceFile.show(null);
+      status.textContent = 'Got it, ' + firstName + ' — we’ll review your invoice and send your audit report within 24 hours.';
+      status.className = 'form-status show ok';
+    } else {
+      status.textContent = 'Something went wrong — please email bennorris@aevonco.com directly.';
+      status.className = 'form-status show err';
     }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
   });
 </script>
 
