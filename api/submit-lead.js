@@ -1,6 +1,6 @@
 import { put } from '@vercel/blob';
 
-export const config = { runtime: 'edge' };
+export const config = { runtime: 'nodejs' };
 
 const UPLOAD_FAILED = 'UPLOAD_FAILED_OR_NOT_AVAILABLE';
 const SMS_TO = '8652097235';
