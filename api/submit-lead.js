@@ -1,6 +1,4 @@
-import { put } from '@vercel/blob';
-
-export const config = { runtime: 'nodejs' };
+export const config = { runtime: 'edge' };
 
 const UPLOAD_FAILED = 'UPLOAD_FAILED_OR_NOT_AVAILABLE';
 const SMS_TO = '8652097235';
@@ -44,62 +42,27 @@ export default async function handler(req) {
     }, 500);
   }
 
-  let firstName = '';
-  let businessName = '';
-  let email = '';
-  let phone = '';
-  let invoiceFileName = '';
-  let invoiceFileUrl = UPLOAD_FAILED;
-
+  let body;
   try {
-    const fd = await req.formData();
-    firstName = String(fd.get('firstName') || '').trim();
-    businessName = String(fd.get('businessName') || '').trim();
-    email = String(fd.get('email') || '').trim();
-    phone = String(fd.get('phone') || '').trim();
-
-    const invoice = fd.get('invoice');
-    if (invoice && typeof invoice === 'object' && typeof invoice.arrayBuffer === 'function') {
-      invoiceFileName = invoice.name || 'invoice.pdf';
-      console.log('[submit-lead] received file', {
-        name: invoiceFileName,
-        size: invoice.size,
-        type: invoice.type,
-      });
-
-      if (process.env.BLOB_READ_WRITE_TOKEN) {
-        try {
-          const safeName = invoiceFileName.replace(/[^A-Za-z0-9._-]/g, '_');
-          const key = `invoices/${Date.now()}-${safeName}`;
-          const blob = await put(key, invoice, {
-            access: 'public',
-            contentType: invoice.type || 'application/pdf',
-            addRandomSuffix: false,
-          });
-          invoiceFileUrl = blob.url;
-          console.log('[submit-lead] uploaded to blob', { key, url: invoiceFileUrl });
-        } catch (uploadErr) {
-          console.error('[submit-lead] blob upload failed', uploadErr);
-          invoiceFileUrl = UPLOAD_FAILED;
-        }
-      } else {
-        console.warn('[submit-lead] BLOB_READ_WRITE_TOKEN not set; skipping upload');
-      }
-    } else {
-      console.warn('[submit-lead] no invoice file in form data');
-    }
-  } catch (parseErr) {
-    console.error('[submit-lead] failed to parse form data', parseErr);
+    body = await req.json();
+  } catch (e) {
     return json({
       ok: false,
-      error: 'Failed to parse form data: ' + (parseErr && parseErr.message ? parseErr.message : String(parseErr)),
+      error: 'Invalid JSON body: ' + (e && e.message ? e.message : String(e)),
       webhookStatus: 0,
       webhookBody: '',
       payload: null,
-      invoiceFileName,
-      invoiceFileUrl,
+      invoiceFileName: '',
+      invoiceFileUrl: UPLOAD_FAILED,
     }, 400);
   }
+
+  const firstName = String(body.firstName || '').trim();
+  const businessName = String(body.businessName || '').trim();
+  const email = String(body.email || '').trim();
+  const phone = String(body.phone || '').trim();
+  const invoiceFileName = String(body.invoiceFileName || '').trim();
+  const invoiceFileUrl = String(body.invoiceFileUrl || UPLOAD_FAILED).trim() || UPLOAD_FAILED;
 
   const payload = {
     firstName,

@@ -269,6 +269,39 @@
     letter-spacing: 0.005em;
   }
 
+  .ledger-cta { margin-top: 32px; }
+  .cta-light-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    color: var(--navy);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 14px 24px;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    transition: border-color 120ms ease, background 120ms ease;
+    font-family: inherit;
+  }
+  .cta-light-outline:hover { border-color: var(--navy); background: rgba(10,31,68,0.04); }
+  .cta-light-outline .arrow-dark {
+    display: inline-block;
+    width: 14px; height: 1px;
+    background: var(--navy);
+    position: relative;
+  }
+  .cta-light-outline .arrow-dark::after {
+    content: "";
+    position: absolute;
+    right: 0; top: -3px;
+    width: 6px; height: 6px;
+    border-top: 1px solid var(--navy);
+    border-right: 1px solid var(--navy);
+    transform: rotate(45deg);
+  }
+
   /* Steps */
   .steps h2 {
     font-size: clamp(28px, 3.2vw, 40px);
@@ -634,6 +667,12 @@
         </div>
       </div>
       <p class="ledger-foot">Actual findings from a recent audit. Client name withheld.</p>
+      <div class="ledger-cta">
+        <a class="cta-light-outline" href="./sample-report" target="_blank" rel="noopener">
+          See the full sample report
+          <span class="arrow-dark" aria-hidden="true"></span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -720,7 +759,7 @@
   </div>
 </footer>
 
-<script>
+<script type="module">
   // Smooth scroll for the hero CTA
   document.querySelectorAll('a[data-scroll]').forEach(a => {
     a.addEventListener('click', e => {
@@ -737,20 +776,22 @@
     });
   });
 
-  // Form submission goes to our Vercel function, which holds the
-  // Make.com webhook URL in MAKE_WEBHOOK_URL env and uploads the PDF
-  // to Vercel Blob to produce a permanent public URL.
+  // Browser uploads PDF straight to Vercel Blob via a token issued by
+  // /api/blob-upload, then POSTs JSON (with the resulting blob URL) to
+  // /api/submit-lead. /api/submit-lead forwards the JSON to Make.com.
   const SUBMIT_ENDPOINT = '/api/submit-lead';
-  const form = document.getElementById('auditForm');
-  const status = document.getElementById('formStatus');
+  const UPLOAD_HANDLER  = '/api/blob-upload';
+  const UPLOAD_FAILED   = 'UPLOAD_FAILED_OR_NOT_AVAILABLE';
+
+  const form      = document.getElementById('auditForm');
+  const status    = document.getElementById('formStatus');
   const submitBtn = document.getElementById('submitBtn');
-  const debugBox = document.getElementById('formDebug');
+  const debugBox  = document.getElementById('formDebug');
   const debugBody = document.getElementById('formDebugBody');
 
-  // File input UI — wire dropzone, click-to-pick, and chosen-file display
   function wireFile(dropId, inputId, chosenId) {
-    const drop = document.getElementById(dropId);
-    const input = document.getElementById(inputId);
+    const drop   = document.getElementById(dropId);
+    const input  = document.getElementById(inputId);
     const chosen = document.getElementById(chosenId);
     if (!drop || !input || !chosen) return { input, show: () => {} };
 
@@ -782,6 +823,7 @@
   function showDebug(data) {
     if (!debugBox || !debugBody) return;
     const lines = [];
+    if (data.uploadError) lines.push('Upload error: ' + data.uploadError);
     if (data.webhookStatus !== undefined) lines.push('Webhook response status: ' + data.webhookStatus);
     if (data.webhookBody !== undefined) lines.push('Webhook response body: ' + (data.webhookBody === '' ? '(empty)' : data.webhookBody));
     if (data.invoiceFileName !== undefined) lines.push('Invoice file name: ' + (data.invoiceFileName || '(none)'));
@@ -792,15 +834,24 @@
     debugBox.hidden = false;
   }
 
+  // Lazy-load @vercel/blob/client only when the user actually submits.
+  let cachedUpload = null;
+  async function getUploader() {
+    if (cachedUpload) return cachedUpload;
+    const mod = await import('https://esm.sh/@vercel/blob@1.0.1/client');
+    cachedUpload = mod.upload;
+    return cachedUpload;
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     status.classList.remove('show', 'ok', 'err');
     if (debugBox) debugBox.hidden = true;
 
-    const firstName = form.firstName.value.trim();
+    const firstName    = form.firstName.value.trim();
     const businessName = form.businessName.value.trim();
-    const email = form.email.value.trim();
-    const invoice = form.invoice.files[0];
+    const email        = form.email.value.trim();
+    const invoice      = form.invoice.files[0];
 
     if (!firstName || !businessName) {
       status.textContent = 'Please enter your first name and business name.';
@@ -815,25 +866,43 @@
 
     submitBtn.disabled = true;
     const originalText = submitBtn.textContent;
+
+    let invoiceFileUrl = UPLOAD_FAILED;
+    let uploadError = '';
+    try {
+      submitBtn.textContent = 'Uploading…';
+      const upload = await getUploader();
+      const safeName = invoice.name.replace(/[^A-Za-z0-9._-]/g, '_');
+      const blob = await upload('invoices/' + Date.now() + '-' + safeName, invoice, {
+        access: 'public',
+        handleUploadUrl: UPLOAD_HANDLER,
+        contentType: invoice.type || 'application/pdf',
+      });
+      invoiceFileUrl = blob.url;
+      console.log('[audit-form] uploaded', blob.url);
+    } catch (uErr) {
+      uploadError = String(uErr && uErr.message ? uErr.message : uErr);
+      console.error('[audit-form] upload failed', uErr);
+    }
+
     submitBtn.textContent = 'Sending…';
 
-    const fd = new FormData();
-    fd.append('firstName', firstName);
-    fd.append('businessName', businessName);
-    fd.append('email', email);
-    fd.append('phone', '');
-    fd.append('invoice', invoice);
-
-    console.log('[audit-form] submitting', {
+    const requestPayload = {
       firstName,
       businessName,
       email,
-      invoice: { name: invoice.name, size: invoice.size, type: invoice.type },
-    });
+      phone: '',
+      invoiceFileName: invoice.name,
+      invoiceFileUrl,
+    };
 
     let result = { ok: false, error: 'No response from server' };
     try {
-      const res = await fetch(SUBMIT_ENDPOINT, { method: 'POST', body: fd });
+      const res = await fetch(SUBMIT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestPayload),
+      });
       const text = await res.text();
       console.log('[audit-form] /api/submit-lead status', res.status);
       console.log('[audit-form] /api/submit-lead body', text);
@@ -852,17 +921,17 @@
       result = { ok: false, error: String(err && err.message ? err.message : err) };
     }
 
-    console.log('[audit-form] webhook payload', result.payload);
-    console.log('[audit-form] webhook response status/body', result.webhookStatus, result.webhookBody);
-    console.log('[audit-form] invoice file URL', result.invoiceFileUrl);
-
+    if (uploadError) result.uploadError = uploadError;
     showDebug(result);
 
-    if (result.ok) {
+    if (result.ok && !uploadError) {
       form.reset();
       invoiceFile.show(null);
       status.textContent = 'Got it, ' + firstName + ' — we’ll review your invoice and send your audit report within 24 hours.';
       status.className = 'form-status show ok';
+    } else if (uploadError) {
+      status.textContent = 'We received your details but the invoice upload failed. We’ll reach out shortly.';
+      status.className = 'form-status show err';
     } else {
       status.textContent = 'Something went wrong — please email bennorris@aevonco.com directly.';
       status.className = 'form-status show err';
