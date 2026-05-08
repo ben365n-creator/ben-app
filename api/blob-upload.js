@@ -1,6 +1,6 @@
 import { handleUpload } from '@vercel/blob/client';
 
-export const config = { runtime: 'edge' };
+export const config = { runtime: 'nodejs' };
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
