@@ -1,0 +1,17 @@
+﻿# Ben's Daily System App â€” .gitignore additions
+# INSTRUCTIONS FOR BEN:
+#   1. Open the ben-app repo's existing .gitignore
+#   2. Append the lines below (or create the file if it doesn't exist)
+#   3. Run: git add .gitignore && git commit -m "chore: protect local credentials"
+
+# Local credentials â€” NEVER commit
+.env
+*.env
+.env.*
+credentials/
+
+# Local build artifacts
+node_modules/
+dist/
+.DS_Store
+
