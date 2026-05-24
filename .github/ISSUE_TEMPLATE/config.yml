@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Just talk to TITAN from your phone
+    url: https://github.com/ben365n-creator/titan-brain/blob/main/DAILY_OPS.md
+    about: See the daily ops guide — the `titan` CLI handles everything from your phone too.
