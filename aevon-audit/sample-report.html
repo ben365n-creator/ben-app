@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sample Audit Report — Aevon</title>
+<meta name="description" content="Sample uniform invoice audit report — the same format Aevon delivers within 24 hours of submission." />
+<meta name="robots" content="noindex" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230A1F44'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='-apple-system,Segoe UI,Roboto,sans-serif' font-size='20' font-weight='800' fill='%23fff'%3EA%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #0A1F44;
+    --navy-deep: #061634;
+    --ink: #0B1220;
+    --ink-2: #2B3344;
+    --muted: #5C6577;
+    --line: #E5E7EB;
+    --line-strong: #C9CED8;
+    --bg: #F4F6FA;
+    --paper: #ffffff;
+    --red: #C8102E;
+    --red-bg: #FFF5F6;
+    --row-alt: #F7F9FC;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  .toolbar {
+    max-width: 920px;
+    margin: 24px auto 0;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .toolbar a.back {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toolbar a.back:hover { color: var(--navy); }
+  .toolbar button {
+    background: var(--navy);
+    color: #fff;
+    border: 1px solid var(--navy);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.005em;
+  }
+  .toolbar button:hover { background: var(--navy-deep); }
+
+  .paper {
+    max-width: 920px;
+    margin: 16px auto 80px;
+    background: var(--paper);
+    padding: 56px 64px;
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 2px rgba(11,18,32,0.04), 0 8px 32px rgba(11,18,32,0.06);
+  }
+
+  .report-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: start;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--navy);
+  }
+  .report-header h1 {
+    font-size: 36px;
+    letter-spacing: -0.025em;
+    color: var(--navy);
+    margin: 0;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .report-header .brand-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 6px 0 0;
+    letter-spacing: 0.01em;
+  }
+  .report-header .meta {
+    font-size: 12px;
+    color: var(--ink-2);
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  .report-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 32px 0 18px;
+  }
+
+  .summary {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-collapse: collapse;
+    margin-bottom: 28px;
+    font-size: 14px;
+  }
+  .summary tr { border-bottom: 1px solid var(--line); }
+  .summary tr:last-child { border-bottom: 0; }
+  .summary td {
+    padding: 14px 18px;
+    vertical-align: middle;
+  }
+  .summary tr:nth-child(odd) { background: var(--row-alt); }
+  .summary tr.flag { background: var(--red-bg); }
+  .summary tr.flag td { color: var(--red); font-weight: 600; }
+  .summary td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 32px 0 14px;
+  }
+
+  .findings {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    border: 1px solid var(--line);
+  }
+  .findings thead th {
+    background: var(--navy);
+    color: #fff;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+  .findings tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .findings tbody tr:nth-child(even) td { background: var(--row-alt); }
+  .findings .num {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .findings .dispute {
+    color: var(--red);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .findings tr.totals td {
+    background: var(--red-bg) !important;
+    color: var(--red);
+    border-bottom: 0;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .next-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .step-card {
+    background: var(--navy);
+    color: #fff;
+    padding: 22px;
+    border-radius: 4px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .step-card .num {
+    font-size: 26px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .step-card h4 {
+    font-size: 14px;
+    margin: 0 0 8px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 1.3;
+  }
+  .step-card p {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.84);
+    margin: 0;
+    line-height: 1.55;
+  }
+  .step-card strong { color: #fff; font-weight: 600; }
+
+  .report-footer {
+    margin-top: 36px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.7;
+  }
+  .report-footer p { margin: 0 0 6px; }
+  .report-footer a { color: var(--navy); text-decoration: none; }
+  .report-footer .disclaimer { color: var(--muted); font-style: italic; margin-top: 10px; }
+
+  @media print {
+    body { background: #fff; }
+    .toolbar { display: none; }
+    .paper {
+      max-width: none;
+      margin: 0;
+      padding: 24px;
+      border: 0;
+      box-shadow: none;
+    }
+    .step-card,
+    .findings thead th,
+    .findings tr.totals td,
+    .summary tr.flag {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .paper { padding: 28px 22px; margin: 12px 12px 60px; }
+    .report-header { grid-template-columns: 1fr; }
+    .report-header .meta { text-align: left; }
+    .report-header h1 { font-size: 28px; }
+    .next-steps { grid-template-columns: 1fr; }
+    .findings { font-size: 12px; }
+    .findings thead th, .findings tbody td { padding: 10px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a class="back" href="./">← Back to Aevon</a>
+  <button type="button" onclick="window.print()">Save as PDF</button>
+</div>
+
+<main class="paper">
+  <header class="report-header">
+    <div>
+      <h1>AEVON</h1>
+      <p class="brand-sub">Uniform Invoice Audit</p>
+    </div>
+    <div class="meta">
+      Client: Blue Ridge Auto Group<br />
+      Vendor: Cintas Corporation<br />
+      Invoice Period: April 2026 &nbsp;|&nbsp; Date: April 30, 2026<br />
+      3 locations &nbsp;|&nbsp; 12 employees in uniform
+    </div>
+  </header>
+
+  <h2 class="report-title">Uniform Invoice Audit Report</h2>
+
+  <table class="summary">
+    <tbody>
+      <tr><td>Your Cintas invoice</td><td>$1,090.50&nbsp;/&nbsp;month</td></tr>
+      <tr><td>What your contract says you should pay</td><td>$576.20&nbsp;/&nbsp;month</td></tr>
+      <tr class="flag"><td>Overcharged this month</td><td>$514.30 &nbsp;—&nbsp; $6,171.60&nbsp;/&nbsp;year</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="section-title">Line-by-line findings</h3>
+  <table class="findings">
+    <thead>
+      <tr>
+        <th>Line item</th>
+        <th>Billed</th>
+        <th>Contract</th>
+        <th>Overcharge</th>
+        <th>Dispute action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Mechanic shirts (weekly service)</td>
+        <td class="num">$252.20/mo</td>
+        <td class="num">$202.80/mo</td>
+        <td class="num">+$49.40</td>
+        <td class="dispute">Dispute — cite Section 3 (Unit Pricing) of your contract</td>
+      </tr>
+      <tr>
+        <td>Shop pants (weekly service)</td>
+        <td class="num">$218.40/mo</td>
+        <td class="num">$182.00/mo</td>
+        <td class="num">+$36.40</td>
+        <td class="dispute">Dispute — cite Section 3 (Unit Pricing) of your contract</td>
+      </tr>
+      <tr>
+        <td>L&amp;D fee — J. Martinez (returned 3/14)</td>
+        <td class="num">$87.00</td>
+        <td class="num">$0.00</td>
+        <td class="num">+$87.00</td>
+        <td class="dispute">Do not pay — item returned 3/14; charge is invalid</td>
+      </tr>
+      <tr>
+        <td>Backup inventory charge</td>
+        <td class="num">$156.00/mo</td>
+        <td class="num">$0.00</td>
+        <td class="num">+$156.00</td>
+        <td class="dispute">Do not pay — not in contract</td>
+      </tr>
+      <tr>
+        <td>Fuel surcharge</td>
+        <td class="num">$126.00/mo</td>
+        <td class="num">$0.00</td>
+        <td class="num">+$126.00</td>
+        <td class="dispute">Do not pay — not in contract</td>
+      </tr>
+      <tr>
+        <td>Shop floor mats (weekly)</td>
+        <td class="num">$120.90/mo</td>
+        <td class="num">$101.40/mo</td>
+        <td class="num">+$19.50</td>
+        <td class="dispute">Dispute — cite Section 3 (Unit Pricing) of your contract</td>
+      </tr>
+      <tr>
+        <td>Prep/makeup charge — 2 new hires</td>
+        <td class="num">$130.00</td>
+        <td class="num">$90.00</td>
+        <td class="num">+$40.00</td>
+        <td class="dispute">Dispute — cite Section 7 (New Employee Setup) of your contract</td>
+      </tr>
+      <tr class="totals">
+        <td><strong>Totals</strong></td>
+        <td class="num"><strong>$1,090.50</strong></td>
+        <td class="num"><strong>$576.20</strong></td>
+        <td class="num"><strong>+$514.30</strong></td>
+        <td><strong>$6,171.60 overcharged per year</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="section-title">What to do next</h3>
+  <div class="next-steps">
+    <div class="step-card">
+      <div class="num">1</div>
+      <div>
+        <h4>Do not pay the full invoice.</h4>
+        <p>Pay <strong>$576.20 only</strong> — the amount your contract requires. Withhold the $514.30 disputed amount pending resolution.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="num">2</div>
+      <div>
+        <h4>Send the dispute letter to Cintas.</h4>
+        <p>Aevon generates this letter automatically, pre-filled with every line item and contract reference. No writing required.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="num">3</div>
+      <div>
+        <h4>Future invoices are monitored automatically.</h4>
+        <p>Aevon checks every billing cycle and flags overcharges before you pay them — so this never slips through again.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="report-footer">
+    <p><strong>This report was generated by Aevon AI.</strong> Aevon monitors your uniform and linen invoices every billing cycle and flags overcharges before you pay them.</p>
+    <p>Questions or ready to enroll? Contact <a href="mailto:bennorris@aevonco.com">bennorris@aevonco.com</a> &nbsp;|&nbsp; <a href="tel:+18652097235">865-209-7235</a></p>
+    <p class="disclaimer">For demonstration purposes only. Client and invoice data are fictional.</p>
+  </footer>
+</main>
+
+</body>
+</html>

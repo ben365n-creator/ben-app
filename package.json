@@ -1,0 +1,9 @@
+{
+  "name": "ben-app",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Aevon landing pages and supporting Vercel functions.",
+  "dependencies": {
+    "@vercel/blob": "^1.0.1"
+  }
+}
