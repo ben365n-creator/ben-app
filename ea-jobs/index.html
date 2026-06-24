@@ -245,10 +245,11 @@
       <div class="picker-sub">Tap your name to get started.<br>This only needs to be done once on this device.</div>
       <button class="picker-btn" onclick="selectRole('trish')">Trish</button>
       <button class="picker-btn" onclick="selectRole('andrew')">Andrew</button>
-      <div class="picker-divider">Crew</div>
+      <div class="picker-divider">Crew Leaders</div>
       <button class="picker-btn" onclick="selectRole('crew','Mark')">Mark</button>
       <button class="picker-btn" onclick="selectRole('crew','Daniel')">Daniel</button>
       <button class="picker-btn" onclick="selectRole('crew','Evan')">Evan</button>
+      <button class="picker-btn" onclick="selectRole('crew','Andrew')">Andrew (Crew Leader)</button>
     </div>
   </div>
 
@@ -531,7 +532,7 @@
 
       if (isCrew) {
         document.getElementById('header-sub').textContent =
-          'Hey ' + (crewName || 'there') + ' — log your materials';
+          'Hey ' + (crewName || 'there') + ' — log your expenses';
         document.getElementById('crew-screen').style.display = 'block';
         loadCrewJobs();
         return;
