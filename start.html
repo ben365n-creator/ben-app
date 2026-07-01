@@ -347,15 +347,13 @@ footer a{color:var(--bronze-soft)}
 (function () {
   'use strict';
 
-  // --- Config ---
+  // ─── Config ────────────────────────────────────────────────────────
   var WEBHOOK_URL = 'https://hook.us2.make.com/vfbi340qfsgpfvmmnp7gwyzrqipg9nmt';
 
-  // IMPORTANT: Replace CONVERSION_LABEL_PLACEHOLDER with the real label from Google Ads.
-  // Create at: ads.google.com -> Goals -> Conversions -> New conversion action -> Website -> Lead form
-  // The label is the segment after the slash in AW-18214340972/LABEL
-  var GADS_CONVERSION = 'AW-18214340972/CONVERSION_LABEL_PLACEHOLDER';
+  // Conversion action: "Pickleball Lead Form Submission" — CID 928-637-0894, AW-18214340972
+  var GADS_CONVERSION = 'AW-18214340972/b2xgCNuCxsgcEOyso-1D';
 
-  // --- GCLID capture ---
+  // ─── GCLID capture ─────────────────────────────────────────────────
   function getGCLID() {
     try {
       var params = new URLSearchParams(window.location.search);
@@ -373,7 +371,7 @@ footer a{color:var(--bronze-soft)}
   document.getElementById('f-source').value = gclid ? 'Google Ads' : 'Website';
   document.getElementById('f-page').value = window.location.href;
 
-  // --- Validation ---
+  // ─── Validation ────────────────────────────────────────────────────
   function setError(fg, show) {
     if (!fg) return;
     fg.classList.toggle('has-error', show);
@@ -415,9 +413,9 @@ footer a{color:var(--bronze-soft)}
     document.getElementById('consent-err').style.display = this.checked ? 'none' : 'block';
   });
 
-  // --- Tracking ---
+  // ─── Tracking ───────────────────────────────────────────────────────
   function fireTracking(payload) {
-    // Google Ads conversion (fires once -- deduped by transaction_id)
+    // Google Ads conversion (fires once — deduped by transaction_id)
     if (typeof gtag === 'function') {
       gtag('event', 'conversion', {
         send_to: GADS_CONVERSION,
@@ -451,7 +449,7 @@ footer a{color:var(--bronze-soft)}
     }
   }
 
-  // --- Submit ---
+  // ─── Submit ─────────────────────────────────────────────────────────
   var form = document.getElementById('lead-form');
   var btn  = document.getElementById('submit-btn');
 
@@ -459,7 +457,6 @@ footer a{color:var(--bronze-soft)}
     e.preventDefault();
 
     if (!validateAll()) {
-      // Scroll to first error
       var first = form.querySelector('.has-error');
       if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
